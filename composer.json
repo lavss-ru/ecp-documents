@@ -1,0 +1,12 @@
+{
+    "name": "lavss/ecp-documents",
+    "description": "WordPress plugin for managing PDF documents with electronic signatures.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "autoload": {
+        "psr-4": {
+            "Lavss\\ECPDocuments\\": "src/"
+        }
+    },
+    "require": {}
+}
