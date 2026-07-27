@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ruleset name="ECP Documents">
+
+    <description>
+        Coding standard for the ECP Documents plugin.
+    </description>
+
+    <rule ref="WordPress">
+        <exclude name="WordPress.Files.FileName"/>
+    </rule>
+
+    <file>ecp-documents.php</file>
+    <file>src</file>
+
+</ruleset>

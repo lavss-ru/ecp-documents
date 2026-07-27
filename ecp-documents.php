@@ -12,6 +12,16 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: ecp-documents
  * Domain Path: /languages
+ *
+ * @package ECPDocuments
  */
 
+declare(strict_types=1);
+
 defined( 'ABSPATH' ) || exit;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Lavss\ECPDocuments\Core\Plugin;
+
+( new Plugin() )->run();
