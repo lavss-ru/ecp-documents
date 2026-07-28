@@ -45,6 +45,9 @@ final class Admin {
 	 * @return array
 	 */
 	public function register_tinymce_plugin( array $plugins ): array {
+
+		$plugins['ecp_documents'] = ECP_DOCUMENTS_PLUGIN_URL . 'assets/js/editor.js';
+
 		return $plugins;
 	}
 
@@ -55,6 +58,9 @@ final class Admin {
 	 * @return array
 	 */
 	public function register_tinymce_button( array $buttons ): array {
+
+		$buttons[] = 'ecp_documents';
+
 		return $buttons;
 	}
 }
