@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Lavss\ECPDocuments\Core;
 
 use Lavss\ECPDocuments\Admin\Admin;
+use Lavss\ECPDocuments\Assets\Assets;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -22,7 +23,11 @@ final class Plugin {
 	 * Initialize plugin.
 	 */
 	public function run(): void {
+
 		$admin = new Admin();
 		$admin->register();
+
+		$assets = new Assets();
+		$assets->register();
 	}
 }
