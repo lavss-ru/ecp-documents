@@ -49,6 +49,10 @@
 				.on('click', this.closeDialog.bind(this));
 
 			this.dialog
+				.find('.ecp-dialog-cancel')
+				.on('click', this.cancelDialog.bind(this));
+
+			this.dialog
 				.find('.ecp-select-file')
 				.on('click', this.handleSelectFile.bind(this));
 
@@ -175,15 +179,29 @@
 				'.ecp-field[data-type="' + type + '"]'
 			);
 
-			field
-				.find('.ecp-file-placeholder')
-				.prop('hidden', true);
+			const placeholder = field.find('.ecp-file-placeholder');
 
-			field
-				.find('.ecp-file-link')
-				.text(selection.filename)
-				.attr('href', selection.url)
-				.prop('hidden', false);
+			const link = field.find('.ecp-file-link');
+
+			if (selection.id) {
+
+				placeholder.prop('hidden', true);
+
+				link
+					.text(selection.filename)
+					.attr('href', selection.url)
+					.prop('hidden', false);
+
+			} else {
+
+				link
+					.text('')
+					.attr('href', '#')
+					.prop('hidden', true);
+
+				placeholder.prop('hidden', false);
+
+			}
 
 		}
 
@@ -199,6 +217,14 @@
 
 		}
 
+		cancelDialog() {
+
+			this.reset();
+
+			this.closeDialog();
+
+		}
+
 		reset() {
 
 			this.title = '';
@@ -206,6 +232,14 @@
 			this.selectedPdf = this.createEmptySelection();
 
 			this.selectedSig = this.createEmptySelection();
+
+			this.dialog
+				.find('.ecp-document-title')
+				.val('');
+
+			this.updateFileUI('pdf');
+
+			this.updateFileUI('sig');
 
 		}
 
