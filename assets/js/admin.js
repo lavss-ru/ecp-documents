@@ -1,44 +1,72 @@
 (function ($) {
 	'use strict';
 
-	window.ECPDocuments = {
+	class ECPDocumentsDialog {
 
-		dialog: null,
+		constructor() {
 
-		title: '',
-
-		selectedPdf: null,
-
-		selectedSig: null,
-
-		init: function () {
-			// Инициализация плагина.
-		},
-
-		openDialog: function () {
-
-			alert('admin.js подключен');
-
-		},
-
-		closeDialog: function () {
-			// Здесь позже будет закрытие модального окна.
-		},
-
-		reset: function () {
+			this.dialog = null;
 
 			this.title = '';
+
 			this.selectedPdf = null;
+
 			this.selectedSig = null;
 
 		}
 
-	};
+		init() {
+
+			this.dialog = $('#ecp-documents-dialog');
+
+			this.bindEvents();
+
+		}
+
+		bindEvents() {
+
+			this.dialog
+				.find('.ecp-documents-dialog__close')
+				.on('click', this.closeDialog.bind(this));
+
+			this.dialog
+				.find('.ecp-documents-dialog__overlay')
+				.on('click', this.closeDialog.bind(this));
+
+		}
+
+		openDialog() {
+
+			this.dialog.addClass('ecp-documents-dialog--visible');
+
+		}
+
+		closeDialog() {
+
+			this.dialog.removeClass('ecp-documents-dialog--visible');
+
+		}
+
+		reset() {
+
+			this.title = '';
+
+			this.selectedPdf = null;
+
+			this.selectedSig = null;
+
+		}
+
+	}
+
+	const dialog = new ECPDocumentsDialog();
 
 	$(function () {
 
-		window.ECPDocuments.init();
+		dialog.init();
 
 	});
+
+	window.ECPDocuments = dialog;
 
 })(jQuery);
