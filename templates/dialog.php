@@ -10,7 +10,13 @@ declare(strict_types=1);
 defined( 'ABSPATH' ) || exit;
 ?>
 
-<div id="ecp-documents-dialog" class="ecp-documents-dialog">
+<div
+	id="ecp-documents-dialog"
+	class="ecp-documents-dialog"
+	role="dialog"
+	aria-modal="true"
+	aria-labelledby="ecp-documents-dialog-title"
+>
 
 	<div class="ecp-documents-dialog__overlay"></div>
 
@@ -18,7 +24,9 @@ defined( 'ABSPATH' ) || exit;
 
 		<div class="ecp-documents-dialog__header">
 
-			<h2>Документ с электронной подписью</h2>
+			<h2 id="ecp-documents-dialog-title">
+				Документ с электронной подписью
+			</h2>
 
 			<button
 				type="button"
@@ -41,6 +49,7 @@ defined( 'ABSPATH' ) || exit;
 
 					<input
 						id="ecp-document-title"
+						name="ecp_document_title"
 						type="text"
 						class="regular-text ecp-document-title"
 						placeholder="Например: Устав">
@@ -77,6 +86,7 @@ defined( 'ABSPATH' ) || exit;
 						href="#"
 						target="_blank"
 						rel="noopener noreferrer"
+						aria-label="Открыть выбранный PDF-файл"
 						hidden>
 					</a>
 
@@ -112,6 +122,7 @@ defined( 'ABSPATH' ) || exit;
 						href="#"
 						target="_blank"
 						rel="noopener noreferrer"
+						aria-label="Открыть выбранный SIG-файл"
 						hidden>
 					</a>
 
