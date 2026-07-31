@@ -24,9 +24,60 @@
 
 			return {
 				id: null,
+				title: '',
 				filename: '',
 				url: ''
 			};
+
+		}
+
+		createDocumentTitle(filename) {
+
+			return filename
+				.replace(/\.pdf$/i, '')
+				.replace(/[_-]+/g, ' ')
+				.replace(/\s+/g, ' ')
+				.trim();
+
+		}
+
+		getSelectButtonLabel(type, hasSelection) {
+
+			const labels = {
+
+				pdf: {
+					select: 'Выбрать PDF',
+					change: 'Изменить PDF'
+				},
+
+				sig: {
+					select: 'Выбрать SIG',
+					change: 'Изменить SIG'
+				}
+
+			};
+
+			return hasSelection
+				? labels[type].change
+				: labels[type].select;
+
+		}
+
+		fillDocumentTitle(selection) {
+
+			const field = this.dialog.find('.ecp-document-title');
+
+			if (field.val().trim() !== '') {
+
+				return;
+
+			}
+
+			const title = selection.title && selection.title.trim() !== ''
+				? selection.title
+				: this.createDocumentTitle(selection.filename);
+
+			field.val(title);
 
 		}
 
@@ -151,6 +202,7 @@
 
 			const selection = {
 				id: attachment.id,
+				title: attachment.title,
 				filename: attachment.filename,
 				url: attachment.url
 			};
@@ -158,6 +210,8 @@
 			if (type === 'pdf') {
 
 				this.selectedPdf = selection;
+
+				this.fillDocumentTitle(selection);
 
 			} else {
 
@@ -183,13 +237,27 @@
 
 			const link = field.find('.ecp-file-link');
 
+			field
+				.find('.ecp-select-file')
+				.text(
+					this.getSelectButtonLabel(
+						type,
+						selection.id !== null
+					)
+				);
+
 			if (selection.id) {
+
+				const linkTitle = selection.title && selection.title.trim() !== ''
+					? selection.title
+					: this.createDocumentTitle(selection.filename);
 
 				placeholder.prop('hidden', true);
 
 				link
-					.text(selection.filename)
+					.text(linkTitle)
 					.attr('href', selection.url)
+					.attr('title', 'Открыть PDF-документ')
 					.prop('hidden', false);
 
 			} else {
@@ -197,6 +265,7 @@
 				link
 					.text('')
 					.attr('href', '#')
+					.removeAttr('title')
 					.prop('hidden', true);
 
 				placeholder.prop('hidden', false);

@@ -1,0 +1,159 @@
+.ecp-documents-dialog {
+	display: none;
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+}
+
+.ecp-documents-dialog--visible {
+	display: block;
+}
+
+.ecp-documents-dialog__overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(30, 35, 40, 0.45);
+	backdrop-filter: blur(2px);
+	animation: ecp-dialog-fade 180ms ease;
+}
+
+.ecp-documents-dialog__window {
+	position: relative;
+	background: #fff;
+	width: 800px;
+	max-width: 95%;
+	margin: 60px auto;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	overflow: hidden;
+	animation: ecp-dialog-show 180ms ease;
+}
+
+.ecp-documents-dialog__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	background: #f6f7f7;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.ecp-documents-dialog__header h2 {
+	margin: 0;
+	font-size: 20px;
+	font-weight: 600;
+	line-height: 1.4;
+	color: #1d2327;
+}
+
+.ecp-documents-dialog__body {
+	padding: 24px;
+	background: #fff;
+}
+
+.ecp-documents-dialog__footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	padding: 16px 20px;
+	background: #f6f7f7;
+	border-top: 1px solid #dcdcde;
+}
+
+.ecp-documents-dialog__close {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: none;
+	border-radius: 4px;
+	background: transparent;
+	color: #50575e;
+	font-size: 28px;
+	line-height: 1;
+	cursor: pointer;
+	transition:
+		background-color 0.15s ease,
+		color 0.15s ease;
+}
+
+.ecp-documents-dialog__close:hover {
+	background: #f0f0f1;
+	color: #d63638;
+}
+
+.ecp-documents-dialog__close:focus {
+	outline: none;
+	box-shadow: 0 0 0 2px #2271b1;
+}
+
+.ecp-field {
+	margin-bottom: 24px;
+}
+
+.ecp-field:last-child {
+	margin-bottom: 0;
+}
+
+.ecp-field label {
+	display: block;
+	margin-bottom: 8px;
+}
+
+.ecp-field p {
+	margin: 8px 0 0;
+}
+
+.ecp-document-title {
+	width: 80%;
+	max-width: 100%;
+}
+
+.ecp-file-picker {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.ecp-file-picker .button {
+	min-width: 120px;
+	text-align: center;
+}
+
+.ecp-file-placeholder {
+	color: #50575e;
+	font-style: italic;
+}
+
+.ecp-file-link {
+	text-decoration: none;
+}
+
+.ecp-file-link:hover {
+	text-decoration: underline;
+}
+
+@keyframes ecp-dialog-fade {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes ecp-dialog-show {
+	from {
+		opacity: 0;
+		transform: translateY(-12px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}

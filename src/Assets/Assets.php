@@ -84,6 +84,13 @@ class Assets {
 
 		wp_enqueue_media();
 
+		wp_enqueue_style(
+			'ecp-documents-admin',
+			ECP_DOCUMENTS_PLUGIN_URL . 'assets/css/admin.css',
+			[],
+			null
+		);
+
 		wp_enqueue_script(
 			'ecp-documents-admin',
 			ECP_DOCUMENTS_PLUGIN_URL . 'assets/js/admin.js',
