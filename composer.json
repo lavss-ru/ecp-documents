@@ -1,24 +1,53 @@
 {
-	"name": "lavss/ecp-documents",
-	"description": "WordPress plugin for managing PDF documents with electronic signatures.",
-	"type": "wordpress-plugin",
-	"license": "GPL-2.0-or-later",
-	"autoload": {
-		"psr-4": {
-			"Lavss\\ECPDocuments\\": "src/"
-		}
-	},
-	"require-dev": {
-		"squizlabs/php_codesniffer": "^3.13",
-		"wp-coding-standards/wpcs": "^3.4"
-	},
-	"scripts": {
-		"phpcs": "phpcs --standard=WordPress .",
-		"phpcbf": "phpcbf --standard=WordPress ."
-	},
-	"config": {
-		"allow-plugins": {
-			"dealerdirect/phpcodesniffer-composer-installer": true
-		}
-	}
+    "name": "lavss/ecp-documents",
+    "description": "WordPress plugin for managing PDF documents with electronic signatures.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+
+    "keywords": [
+        "wordpress",
+        "wordpress-plugin",
+        "pdf",
+        "electronic-signature",
+        "ecp",
+        "digital-signature"
+    ],
+
+    "homepage": "https://github.com/lavss-ru/ecp-documents",
+
+    "authors": [
+        {
+            "name": "lavss"
+        }
+    ],
+
+    "require": {
+        "php": ">=8.1"
+    },
+
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.13",
+        "wp-coding-standards/wpcs": "^3.4",
+        "phpcompatibility/php-compatibility": "^9.3"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "Lavss\\ECPDocuments\\": "src/"
+        }
+    },
+
+    "scripts": {
+        "phpcs": "phpcs --standard=WordPress .",
+        "phpcbf": "phpcbf --standard=WordPress ."
+    },
+
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
 }
