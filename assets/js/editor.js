@@ -19,7 +19,9 @@
 					return;
 				}
 
-				alert('Не удалось загрузить admin.js');
+				console.error(
+				        'ECP Documents: admin.js is not loaded'
+				);
 
 			}
 
