@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Registers plugin assets.
  */
-class Assets {
+final class Assets {
 
 	/**
 	 * Register hooks.
@@ -108,7 +108,7 @@ class Assets {
 	 */
 	public function render_dialog_template(): void {
 
-		require plugin_dir_path( ECP_DOCUMENTS_PLUGIN_FILE ) . 'templates/dialog.php';
+		require ECP_DOCUMENTS_PLUGIN_DIR . 'templates/dialog.php';
 
 	}
 
