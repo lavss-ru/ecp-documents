@@ -113,6 +113,10 @@
                                 .find('.ecp-select-file')
                                 .on('click', this.handleSelectFile.bind(this));
 
+                this.dialog
+                                .find('.ecp-insert-document')
+                                .on('click', this.insertDocument.bind(this));
+
                 }
 
                 handleSelectFile(event) {
@@ -282,6 +286,49 @@
                                 placeholder.prop('hidden', false);
 
                         }
+
+                }
+                insertDocument() {
+
+                        if (!this.selectedPdf.id) {
+
+                                alert('Выберите PDF-документ');
+
+                                return;
+
+                        }
+
+                        if (!this.selectedSig.id) {
+
+                                alert('Выберите SIG-файл');
+
+                                return;
+
+                        }
+
+                        const title = this.dialog
+                                .find('.ecp-document-title')
+                                .val()
+                                .trim();
+
+                        if (!title) {
+
+                                alert('Введите название документа');
+
+                                return;
+
+                        }
+
+                        const shortcode =
+                                '[ecp_document pdf="' +
+                                this.selectedPdf.id +
+                                '" sig="' +
+                                this.selectedSig.id +
+                                '" title="' +
+                                title +
+                                '"]';
+
+                        console.log(shortcode);
 
                 }
 
