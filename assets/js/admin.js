@@ -328,7 +328,50 @@
                                 title +
                                 '"]';
 
-                        console.log(shortcode);
+                        this.insertIntoEditor(shortcode);
+
+                        this.reset();
+
+                        this.closeDialog();
+
+                }
+                insertIntoEditor(content) {
+
+                        if (
+                                typeof tinymce !== 'undefined' &&
+                                tinymce.activeEditor &&
+                                !tinymce.activeEditor.isHidden()
+                        ) {
+
+                                tinymce.activeEditor.execCommand(
+                                        'mceInsertContent',
+                                        false,
+                                        content
+                                );
+
+                                return;
+
+                        }
+
+                        const editor = document.getElementById('content');
+
+                        if (!editor) {
+
+                                return;
+
+                        }
+
+                        const start = editor.selectionStart;
+                        const end = editor.selectionEnd;
+
+                        editor.setRangeText(
+                                content,
+                                start,
+                                end,
+                                'end'
+                        );
+
+                        editor.focus();
 
                 }
 
