@@ -95,3 +95,21 @@
         color: #fff;
 
 }
+
+@media (max-width: 640px) {
+
+        .ecp-document__actions {
+
+                flex-direction: column;
+
+        }
+
+        .ecp-document__button {
+
+                width: 100%;
+
+                justify-content: center;
+
+        }
+
+}
