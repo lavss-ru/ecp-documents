@@ -1,0 +1,97 @@
+.ecp-document {
+
+        max-width: 640px;
+
+        margin: 24px 0;
+
+        background: #ffffff;
+
+        border: 1px solid #dbe4ef;
+
+        border-radius: 12px;
+
+        overflow: hidden;
+
+        box-shadow: 0 2px 8px rgba(15, 23, 42, .05);
+
+}
+
+.ecp-document__title {
+
+        padding: 18px 22px;
+
+        font-size: 20px;
+
+        font-weight: 600;
+
+        color: #1f2937;
+
+}
+
+.ecp-document__status {
+
+        padding: 16px 22px;
+
+        border-top: 1px solid #eef2f7;
+
+        color: #15803d;
+
+        font-weight: 500;
+
+}
+
+.ecp-document__actions {
+
+        display: flex;
+
+        gap: 12px;
+
+        padding: 18px 22px;
+
+        border-top: 1px solid #eef2f7;
+
+}
+
+.ecp-document__button {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 6px;
+
+        padding: 10px 16px;
+
+        border-radius: 8px;
+
+        font-weight: 600;
+
+        text-decoration: none;
+
+        transition: .2s;
+
+}
+
+.ecp-document__button:first-child {
+
+        background: #dc2626;
+
+        color: #fff;
+
+}
+
+.ecp-document__button:last-child {
+
+        background: #7c3aed;
+
+        color: #fff;
+
+}
+
+.ecp-document__button:hover {
+
+        opacity: .9;
+
+        color: #fff;
+
+}

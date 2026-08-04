@@ -27,6 +27,8 @@ final class Assets {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
 		add_action( 'admin_footer', [ $this, 'render_dialog_template' ] );
 
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_assets' ] );
+
 	}
 
 	/**
@@ -88,18 +90,34 @@ final class Assets {
 			'ecp-documents-admin',
 			ECP_DOCUMENTS_PLUGIN_URL . 'assets/css/admin.css',
 			[],
-			null
+			ECP_DOCUMENTS_VERSION
 		);
 
 		wp_enqueue_script(
 			'ecp-documents-admin',
 			ECP_DOCUMENTS_PLUGIN_URL . 'assets/js/admin.js',
 			[ 'jquery' ],
-			null,
+			ECP_DOCUMENTS_VERSION,
 			true
 		);
 
 	}
+
+	/**
+    * Enqueue frontend assets.
+    *
+    * @return void
+    */
+    public function enqueue_frontend_assets(): void {
+
+        wp_enqueue_style(
+            'ecp-documents-frontend',
+            ECP_DOCUMENTS_PLUGIN_URL . 'assets/css/frontend.css',
+            [],
+            ECP_DOCUMENTS_VERSION
+        );
+
+    }
 
 	/**
 	 * Render dialog template.
