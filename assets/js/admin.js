@@ -422,6 +422,24 @@
 
 		}
 
+		parseShortcode(shortcode) {
+
+			const match = shortcode.match(
+				/\[ecp_document\s+pdf="(\d+)"\s+sig="(\d+)"\s+title="([^"]+)"\]/
+			);
+
+			if (!match) {
+				return null;
+			}
+
+			return {
+				pdf: Number(match[1]),
+				sig: Number(match[2]),
+				title: match[3]
+			};
+
+		}
+
 		detectEditingShortcode() {
 
 			if (!this.editor) {
@@ -452,9 +470,11 @@
 
 			this.mode = 'edit';
 
+			const shortcode = this.parseShortcode(selected);
+
 			console.log('Edit mode');
 
-			console.log(selected);
+			console.log(shortcode);
 
 		}
 
