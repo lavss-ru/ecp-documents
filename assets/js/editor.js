@@ -14,13 +14,13 @@
 					typeof window.ECPDocuments.openDialog === 'function'
 				) {
 
-					window.ECPDocuments.openDialog();
+					window.ECPDocuments.openDialog(editor);
 
 					return;
 				}
 
 				console.error(
-				        'ECP Documents: admin.js is not loaded'
+					'ECP Documents: admin.js is not loaded'
 				);
 
 			}
