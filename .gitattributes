@@ -1,0 +1,12 @@
+* text=auto eol=lf
+
+*.php text
+*.js text
+*.css text
+*.md text
+*.json text
+
+*.png binary
+*.jpg binary
+*.gif binary
+*.svg text

@@ -2,7 +2,6 @@
 Thumbs.db
 
 .vscode/
-.idea/
 
 *.log
 
@@ -10,6 +9,11 @@ Thumbs.db
 
 node_modules/
 
-vendor/
+/vendor/
 
 *.zip
+
+.vscode/*
+!.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
