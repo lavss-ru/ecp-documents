@@ -1,466 +1,524 @@
 (function ($) {
-        'use strict';
+	'use strict';
 
-        class ECPDocumentsDialog {
+	class ECPDocumentsDialog {
 
-                constructor() {
+		constructor() {
 
-                        this.dialog = null;
+			this.dialog = null;
 
-                        this.title = '';
+			this.title = '';
 
-                        this.selectedPdf = this.createEmptySelection();
+			this.mode = 'create';
 
-                        this.selectedSig = this.createEmptySelection();
+			this.editor = null;
 
-                        this.frames = {
-                                pdf: null,
-                                sig: null
-                        };
+			this.selectedPdf = this.createEmptySelection();
 
-                }
+			this.selectedSig = this.createEmptySelection();
 
-                createEmptySelection() {
+			this.frames = {
+				pdf: null,
+				sig: null
+			};
 
-                        return {
-                                id: null,
-                                title: '',
-                                filename: '',
-                                url: ''
-                        };
+		}
 
-                }
+		createEmptySelection() {
 
-                createDocumentTitle(filename) {
+			return {
+				id: null,
+				title: '',
+				filename: '',
+				url: ''
+			};
 
-                        return filename
-                                .replace(/\.pdf$/i, '')
-                                .replace(/[_-]+/g, ' ')
-                                .replace(/\s+/g, ' ')
-                                .trim();
+		}
 
-                }
+		createDocumentTitle(filename) {
 
-                getSelectButtonLabel(type, hasSelection) {
+			return filename
+				.replace(/\.pdf$/i, '')
+				.replace(/[_-]+/g, ' ')
+				.replace(/\s+/g, ' ')
+				.trim();
 
-                        const labels = {
+		}
 
-                                pdf: {
-                                        select: 'Выбрать PDF',
-                                        change: 'Изменить PDF'
-                                },
+		getSelectButtonLabel(type, hasSelection) {
 
-                                sig: {
-                                        select: 'Выбрать SIG',
-                                        change: 'Изменить SIG'
-                                }
+			const labels = {
 
-                        };
+				pdf: {
+					select: 'Выбрать PDF',
+					change: 'Изменить PDF'
+				},
 
-                        return hasSelection
-                                ? labels[type].change
-                                : labels[type].select;
+				sig: {
+					select: 'Выбрать SIG',
+					change: 'Изменить SIG'
+				}
 
-                }
+			};
 
-                fillDocumentTitle(selection) {
+			return hasSelection
+				? labels[type].change
+				: labels[type].select;
 
-                        const field = this.dialog.find('.ecp-document-title');
+		}
 
-                        if (field.val().trim() !== '') {
+		fillDocumentTitle(selection) {
 
-                                return;
+			const field = this.dialog.find('.ecp-document-title');
 
-                        }
+			if (field.val().trim() !== '') {
 
-                        const title = selection.title && selection.title.trim() !== ''
-                                ? selection.title
-                                : this.createDocumentTitle(selection.filename);
+				return;
 
-                        field.val(title);
+			}
 
-                }
+			const title = selection.title && selection.title.trim() !== ''
+				? selection.title
+				: this.createDocumentTitle(selection.filename);
 
-				updateInsertButtonState() {
+			field.val(title);
 
-                        if (!this.dialog) {
+		}
 
-                                return;
+		updateInsertButtonState() {
 
-                        }
+			if (!this.dialog) {
 
-                        const enabled =
-                                this.selectedPdf.id !== null &&
-                                this.selectedSig.id !== null &&
-                                this.dialog
-                                        .find('.ecp-document-title')
-                                        .val()
-                                        .trim() !== '';
+				return;
 
-                        this.dialog
-                                .find('.ecp-insert-document')
-                                .prop('disabled', !enabled);
+			}
 
-                }
+			const enabled =
+				this.selectedPdf.id !== null &&
+				this.selectedSig.id !== null &&
+				this.dialog
+					.find('.ecp-document-title')
+					.val()
+					.trim() !== '';
 
-                init() {
+			this.dialog
+				.find('.ecp-insert-document')
+				.prop('disabled', !enabled);
 
-                        this.dialog = $('#ecp-documents-dialog');
+		}
 
-                        if (!this.dialog.length) {
+		init() {
 
-                                return;
+			this.dialog = $('#ecp-documents-dialog');
 
-                        }
+			if (!this.dialog.length) {
 
-                        this.bindEvents();
+				return;
 
-                }
+			}
 
-                bindEvents() {
+			this.bindEvents();
 
-                        this.dialog
-                                .find('.ecp-documents-dialog__close')
-                                .on('click', this.closeDialog.bind(this));
+		}
 
-                        this.dialog
-                                .find('.ecp-documents-dialog__overlay')
-                                .on('click', this.closeDialog.bind(this));
+		bindEvents() {
 
-                        this.dialog
-                                .find('.ecp-dialog-cancel')
-                                .on('click', this.cancelDialog.bind(this));
+			this.dialog
+				.find('.ecp-documents-dialog__close')
+				.on('click', this.closeDialog.bind(this));
 
-                        this.dialog
-                                .find('.ecp-select-file')
-                                .on('click', this.handleSelectFile.bind(this));
+			this.dialog
+				.find('.ecp-documents-dialog__overlay')
+				.on('click', this.closeDialog.bind(this));
 
-                        this.dialog
-                                .find('.ecp-insert-document')
-                                .on('click', this.insertDocument.bind(this));
+			this.dialog
+				.find('.ecp-dialog-cancel')
+				.on('click', this.cancelDialog.bind(this));
 
-                        this.dialog
-                                .find('.ecp-document-title')
-                                .on(
-                                        'input',
-                                        this.updateInsertButtonState.bind(this)
-                                );
+			this.dialog
+				.find('.ecp-select-file')
+				.on('click', this.handleSelectFile.bind(this));
 
-                }
+			this.dialog
+				.find('.ecp-insert-document')
+				.on('click', this.insertDocument.bind(this));
 
-                handleSelectFile(event) {
+			this.dialog
+				.find('.ecp-document-title')
+				.on(
+					'input',
+					this.updateInsertButtonState.bind(this)
+				);
 
-                        event.preventDefault();
+		}
 
-                        const type = $(event.currentTarget).data('type');
+		handleSelectFile(event) {
 
-                        this.openMedia(type);
+			event.preventDefault();
 
-                }
+			const type = $(event.currentTarget).data('type');
 
-                openMedia(type) {
+			this.openMedia(type);
 
-                        if (!this.frames[type]) {
+		}
 
-                                this.frames[type] = this.createMediaFrame(type);
+		openMedia(type) {
 
-                        }
+			if (!this.frames[type]) {
 
-                        this.frames[type].open();
+				this.frames[type] = this.createMediaFrame(type);
 
-                }
+			}
 
-                createMediaFrame(type) {
+			this.frames[type].open();
 
-                        const frame = wp.media(
-                                this.getMediaConfig(type)
-                        );
+		}
 
-                        frame.on(
-                                'select',
-                                () => this.handleMediaSelect(type, frame)
-                        );
+		createMediaFrame(type) {
 
-                        return frame;
+			const frame = wp.media(
+				this.getMediaConfig(type)
+			);
 
-                }
+			frame.on(
+				'select',
+				() => this.handleMediaSelect(type, frame)
+			);
 
-                getMediaConfig(type) {
+			return frame;
 
-                        const configs = {
+		}
 
-                                pdf: {
+		getMediaConfig(type) {
 
-                                        title: 'Выберите PDF-документ',
+			const configs = {
 
-                                        button: {
-                                                text: 'Выбрать'
-                                        },
+				pdf: {
 
-                                        library: {
-                                                type: 'application/pdf'
-                                        },
+					title: 'Выберите PDF-документ',
 
-                                        multiple: false
+					button: {
+						text: 'Выбрать'
+					},
 
-                                },
+					library: {
+						type: 'application/pdf'
+					},
 
-                                sig: {
+					multiple: false
 
-                                        title: 'Выберите SIG-файл',
+				},
 
-                                        button: {
-                                                text: 'Выбрать'
-                                        },
+				sig: {
 
-                                        library: {},
+					title: 'Выберите SIG-файл',
 
-                                        multiple: false
+					button: {
+						text: 'Выбрать'
+					},
 
-                                }
+					library: {},
 
-                        };
-
-                        return configs[type];
-
-                }
-
-                handleMediaSelect(type, frame) {
-
-                        const attachment = frame
-                                .state()
-                                .get('selection')
-                                .first()
-                                .toJSON();
-
-                        this.setSelection(type, attachment);
-
-                }
-
-                setSelection(type, attachment) {
-
-                        const selection = {
-                                id: attachment.id,
-                                title: attachment.title,
-                                filename: attachment.filename,
-                                url: attachment.url
-                        };
-
-                        if (type === 'pdf') {
-
-                                this.selectedPdf = selection;
-
-                                this.fillDocumentTitle(selection);
-
-                        } else {
-
-                                this.selectedSig = selection;
-
-                        }
-
-                        this.updateFileUI(type);
-
-                        this.updateInsertButtonState();
+					multiple: false
 
 				}
 
-                updateFileUI(type) {
+			};
 
-                        const selection = type === 'pdf'
-                                ? this.selectedPdf
-                                : this.selectedSig;
+			return configs[type];
 
-                        const field = this.dialog.find(
-                                '.ecp-field[data-type="' + type + '"]'
-                        );
+		}
 
-                        const placeholder = field.find('.ecp-file-placeholder');
+		handleMediaSelect(type, frame) {
 
-                        const link = field.find('.ecp-file-link');
+			const attachment = frame
+				.state()
+				.get('selection')
+				.first()
+				.toJSON();
 
-                        field
-                                .find('.ecp-select-file')
-                                .text(
-                                        this.getSelectButtonLabel(
-                                                type,
-                                                selection.id !== null
-                                        )
-                                );
+			this.setSelection(type, attachment);
 
-                        if (selection.id) {
+		}
 
-                                const linkTitle = selection.title && selection.title.trim() !== ''
-                                        ? selection.title
-                                        : this.createDocumentTitle(selection.filename);
+		setSelection(type, attachment) {
 
-                                placeholder.prop('hidden', true);
+			const selection = {
+				id: attachment.id,
+				title: attachment.title,
+				filename: attachment.filename,
+				url: attachment.url
+			};
 
-                                link
-                                        .text(linkTitle)
-                                        .attr('href', selection.url)
-                                        .attr(
-                                                'title',
-                                                type === 'pdf'
-                                                        ? 'Открыть PDF-документ'
-                                                        : 'Открыть SIG-файл'
-                                        )
-                                        .prop('hidden', false);
+			if (type === 'pdf') {
 
-                        } else {
+				this.selectedPdf = selection;
 
-                                link
-                                        .text('')
-                                        .attr('href', '#')
-                                        .removeAttr('title')
-                                        .prop('hidden', true);
+				this.fillDocumentTitle(selection);
 
-                                placeholder.prop('hidden', false);
+			} else {
 
-                        }
+				this.selectedSig = selection;
 
-                }
-                insertDocument() {
+			}
 
-                        if (!this.selectedPdf.id) {
+			this.updateFileUI(type);
 
-                                alert('Выберите PDF-документ');
+			this.updateInsertButtonState();
 
-                                return;
+		}
 
-                        }
+		updateFileUI(type) {
 
-                        if (!this.selectedSig.id) {
+			const selection = type === 'pdf'
+				? this.selectedPdf
+				: this.selectedSig;
 
-                                alert('Выберите SIG-файл');
+			const field = this.dialog.find(
+				'.ecp-field[data-type="' + type + '"]'
+			);
 
-                                return;
+			const placeholder = field.find('.ecp-file-placeholder');
 
-                        }
+			const link = field.find('.ecp-file-link');
 
-                        const title = this.dialog
-                                .find('.ecp-document-title')
-                                .val()
-                                .trim();
+			field
+				.find('.ecp-select-file')
+				.text(
+					this.getSelectButtonLabel(
+						type,
+						selection.id !== null
+					)
+				);
 
-                        if (!title) {
+			if (selection.id) {
 
-                                alert('Введите название документа');
+				const linkTitle = selection.title && selection.title.trim() !== ''
+					? selection.title
+					: this.createDocumentTitle(selection.filename);
 
-                                return;
+				placeholder.prop('hidden', true);
 
-                        }
+				link
+					.text(linkTitle)
+					.attr('href', selection.url)
+					.attr(
+						'title',
+						type === 'pdf'
+							? 'Открыть PDF-документ'
+							: 'Открыть SIG-файл'
+					)
+					.prop('hidden', false);
 
-                        const shortcode =
-                                '[ecp_document pdf="' +
-                                this.selectedPdf.id +
-                                '" sig="' +
-                                this.selectedSig.id +
-                                '" title="' +
-                                title +
-                                '"]';
+			} else {
 
-                        this.insertIntoEditor(shortcode);
+				link
+					.text('')
+					.attr('href', '#')
+					.removeAttr('title')
+					.prop('hidden', true);
 
-                        this.reset();
+				placeholder.prop('hidden', false);
 
-                        this.closeDialog();
+			}
 
-                }
-                insertIntoEditor(content) {
+		}
+		insertDocument() {
 
-                        if (
-                                typeof tinymce !== 'undefined' &&
-                                tinymce.activeEditor &&
-                                !tinymce.activeEditor.isHidden()
-                        ) {
+			if (!this.selectedPdf.id) {
 
-                                tinymce.activeEditor.execCommand(
-                                        'mceInsertContent',
-                                        false,
-                                        content
-                                );
+				alert('Выберите PDF-документ');
 
-                                return;
+				return;
 
-                        }
+			}
 
-                        const editor = document.getElementById('content');
+			if (!this.selectedSig.id) {
 
-                        if (!editor) {
+				alert('Выберите SIG-файл');
 
-                                return;
+				return;
 
-                        }
+			}
 
-                        const start = editor.selectionStart;
-                        const end = editor.selectionEnd;
+			const title = this.dialog
+				.find('.ecp-document-title')
+				.val()
+				.trim();
 
-                        editor.setRangeText(
-                                content,
-                                start,
-                                end,
-                                'end'
-                        );
+			if (!title) {
 
-                        editor.focus();
+				alert('Введите название документа');
 
-                }
+				return;
 
-                openDialog() {
+			}
 
-                    this.updateInsertButtonState();
+			const shortcode =
+				'[ecp_document pdf="' +
+				this.selectedPdf.id +
+				'" sig="' +
+				this.selectedSig.id +
+				'" title="' +
+				title +
+				'"]';
 
-                    this.dialog.addClass(
-                             'ecp-documents-dialog--visible'
-                );
+			this.insertIntoEditor(shortcode);
 
-				}
+			this.reset();
 
-                closeDialog() {
+			this.closeDialog();
 
-                        this.dialog.removeClass(
-                             'ecp-documents-dialog--visible');
+		}
+		insertIntoEditor(content) {
 
-                }
+			if (
+				typeof tinymce !== 'undefined' &&
+				tinymce.activeEditor &&
+				!tinymce.activeEditor.isHidden()
+			) {
 
-                cancelDialog() {
+				tinymce.activeEditor.execCommand(
+					'mceInsertContent',
+					false,
+					content
+				);
 
-                        this.reset();
+				return;
 
-                        this.closeDialog();
+			}
 
-                }
+			const editor = document.getElementById('content');
 
-                reset() {
+			if (!editor) {
 
-                        this.title = '';
+				return;
 
-                        this.selectedPdf = this.createEmptySelection();
+			}
 
-                        this.selectedSig = this.createEmptySelection();
+			const start = editor.selectionStart;
+			const end = editor.selectionEnd;
 
-                        this.dialog
-                                .find('.ecp-document-title')
-                                .val('');
+			editor.setRangeText(
+				content,
+				start,
+				end,
+				'end'
+			);
 
-                        this.updateFileUI('pdf');
+			editor.focus();
 
-                        this.updateFileUI('sig');
+		}
 
-                        this.updateInsertButtonState();
+		getEditorContent() {
 
-						}
+			if (!this.editor) {
+				return '';
+			}
 
-        }
+			return this.editor.getContent({
+				format: 'raw'
+			});
 
-        const dialog = new ECPDocumentsDialog();
+		}
 
-        $(function () {
+		detectEditingShortcode() {
 
-                dialog.init();
+			if (!this.editor) {
 
-        });
+				this.mode = 'create';
 
-        window.ECPDocuments = dialog;
+				return;
+
+			}
+
+			const selected = this.editor.selection.getContent({
+				format: 'text'
+			}).trim();
+
+			const match = selected.match(
+				/^\[ecp_document\b([\s\S]*)\]$/
+			);
+
+			if (!match) {
+
+				this.mode = 'create';
+
+				console.log('Create mode');
+
+				return;
+
+			}
+
+			this.mode = 'edit';
+
+			console.log('Edit mode');
+
+			console.log(selected);
+
+		}
+
+		openDialog(editor) {
+
+			this.editor = editor;
+
+			this.detectEditingShortcode();
+
+			console.log('Dialog mode:', this.mode);
+
+			this.updateInsertButtonState();
+
+			this.dialog.addClass(
+				'ecp-documents-dialog--visible'
+			);
+
+		}
+
+		closeDialog() {
+
+			this.dialog.removeClass(
+				'ecp-documents-dialog--visible');
+
+		}
+
+		cancelDialog() {
+
+			this.reset();
+
+			this.closeDialog();
+
+		}
+
+		reset() {
+
+			this.title = '';
+
+			this.selectedPdf = this.createEmptySelection();
+
+			this.selectedSig = this.createEmptySelection();
+
+			this.dialog
+				.find('.ecp-document-title')
+				.val('');
+
+			this.updateFileUI('pdf');
+
+			this.updateFileUI('sig');
+
+			this.updateInsertButtonState();
+
+		}
+
+	}
+
+	const dialog = new ECPDocumentsDialog();
+
+	$(function () {
+
+		dialog.init();
+
+	});
+
+	window.ECPDocuments = dialog;
 
 })(jQuery);
