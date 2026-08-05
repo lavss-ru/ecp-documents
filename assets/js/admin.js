@@ -81,6 +81,28 @@
 
                 }
 
+				updateInsertButtonState() {
+
+                        if (!this.dialog) {
+
+                                return;
+
+                        }
+
+                        const enabled =
+                                this.selectedPdf.id !== null &&
+                                this.selectedSig.id !== null &&
+                                this.dialog
+                                        .find('.ecp-document-title')
+                                        .val()
+                                        .trim() !== '';
+
+                        this.dialog
+                                .find('.ecp-insert-document')
+                                .prop('disabled', !enabled);
+
+                }
+
                 init() {
 
                         this.dialog = $('#ecp-documents-dialog');
@@ -113,9 +135,16 @@
                                 .find('.ecp-select-file')
                                 .on('click', this.handleSelectFile.bind(this));
 
-                this.dialog
+                        this.dialog
                                 .find('.ecp-insert-document')
                                 .on('click', this.insertDocument.bind(this));
+
+                        this.dialog
+                                .find('.ecp-document-title')
+                                .on(
+                                        'input',
+                                        this.updateInsertButtonState.bind(this)
+                                );
 
                 }
 
@@ -231,7 +260,9 @@
 
                         this.updateFileUI(type);
 
-                }
+                        this.updateInsertButtonState();
+
+				}
 
                 updateFileUI(type) {
 
@@ -377,13 +408,18 @@
 
                 openDialog() {
 
-                        this.dialog.addClass('ecp-documents-dialog--visible');
+                    this.updateInsertButtonState();
 
-                }
+                    this.dialog.addClass(
+                             'ecp-documents-dialog--visible'
+                );
+
+				}
 
                 closeDialog() {
 
-                        this.dialog.removeClass('ecp-documents-dialog--visible');
+                        this.dialog.removeClass(
+                             'ecp-documents-dialog--visible');
 
                 }
 
@@ -411,7 +447,9 @@
 
                         this.updateFileUI('sig');
 
-                }
+                        this.updateInsertButtonState();
+
+						}
 
         }
 
