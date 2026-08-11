@@ -72,7 +72,7 @@
 
 }
 
-.ecp-document__button:first-child {
+.ecp-document__button--pdf {
 
         background: #dc2626;
 
@@ -80,7 +80,7 @@
 
 }
 
-.ecp-document__button:last-child {
+.ecp-document__button--sig {
 
         background: #7c3aed;
 

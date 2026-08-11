@@ -20,43 +20,51 @@ defined( 'ABSPATH' ) || exit;
 
         </div>
 
-        <div class="ecp-document__status">
+        <?php if ( $sig_url ) : ?>
 
-                ✅ Документ подписан электронной подписью
+                <div class="ecp-document__status">
 
-        </div>
+                        ✅ Документ подписан электронной подписью
 
-        <div class="ecp-document__actions">
+                </div>
 
-                <?php if ( $pdf_url ) : ?>
+        <?php endif; ?>
 
-                        <a
-                                class="ecp-document__button"
-        						href="<?php echo esc_url( $pdf_url ); ?>"
-        						target="_blank"
-        						rel="noopener noreferrer"
-        						aria-label="Скачать PDF-документ">
-        						📄 Скачать PDF
+        <?php if ( $pdf_url || $sig_url ) : ?>
 
-						</a>
+                <div class="ecp-document__actions">
 
-                <?php endif; ?>
+                        <?php if ( $pdf_url ) : ?>
 
-                <?php if ( $sig_url ) : ?>
+                                <a
+                                        class="ecp-document__button ecp-document__button--pdf"
+                                        href="<?php echo esc_url( $pdf_url ); ?>"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label="Скачать PDF-документ">
+                                        📄 Скачать PDF
 
-                        <a
-        						class="ecp-document__button"
-        						href="<?php echo esc_url( $sig_url ); ?>"
-        						target="_blank"
-        						rel="noopener noreferrer"
-        						aria-label="Скачать файл электронной подписи">
+                                </a>
 
-        						🔐 Скачать SIG
+                        <?php endif; ?>
 
-</a>
+                        <?php if ( $sig_url ) : ?>
 
-                <?php endif; ?>
+                                <a
+                                        class="ecp-document__button ecp-document__button--sig"
+                                        href="<?php echo esc_url( $sig_url ); ?>"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label="Скачать файл электронной подписи">
 
-        </div>
+                                        🔐 Скачать SIG
+
+                                </a>
+
+                        <?php endif; ?>
+
+                </div>
+
+        <?php endif; ?>
 
 </div>

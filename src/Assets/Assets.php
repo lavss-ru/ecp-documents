@@ -84,6 +84,16 @@ final class Assets {
 	 */
 	public function enqueue_admin_assets(): void {
 
+		if ( ! current_user_can( 'edit_posts' ) && ! current_user_can( 'edit_pages' ) ) {
+			return;
+		}
+
+		$screen = get_current_screen();
+
+		if ( ! $screen || 'post' !== $screen->base ) {
+			return;
+		}
+
 		wp_enqueue_media();
 
 		wp_enqueue_style(
@@ -104,20 +114,20 @@ final class Assets {
 	}
 
 	/**
-    * Enqueue frontend assets.
-    *
-    * @return void
-    */
-    public function enqueue_frontend_assets(): void {
+	 * Enqueue frontend assets.
+	 *
+	 * @return void
+	 */
+	public function enqueue_frontend_assets(): void {
 
-        wp_enqueue_style(
-            'ecp-documents-frontend',
-            ECP_DOCUMENTS_PLUGIN_URL . 'assets/css/frontend.css',
-            [],
-            ECP_DOCUMENTS_VERSION
-        );
+		wp_enqueue_style(
+			'ecp-documents-frontend',
+			ECP_DOCUMENTS_PLUGIN_URL . 'assets/css/frontend.css',
+			[],
+			ECP_DOCUMENTS_VERSION
+		);
 
-    }
+	}
 
 	/**
 	 * Render dialog template.
@@ -125,6 +135,16 @@ final class Assets {
 	 * @return void
 	 */
 	public function render_dialog_template(): void {
+
+		if ( ! current_user_can( 'edit_posts' ) && ! current_user_can( 'edit_pages' ) ) {
+			return;
+		}
+
+		$screen = get_current_screen();
+
+		if ( ! $screen || 'post' !== $screen->base ) {
+			return;
+		}
 
 		require ECP_DOCUMENTS_PLUGIN_DIR . 'templates/dialog.php';
 

@@ -326,19 +326,13 @@
 		insertDocument() {
 
 			if (!this.selectedPdf.id) {
-
 				alert('Выберите PDF-документ');
-
 				return;
-
 			}
 
 			if (!this.selectedSig.id) {
-
 				alert('Выберите SIG-файл');
-
 				return;
-
 			}
 
 			const title = this.dialog
@@ -347,29 +341,61 @@
 				.trim();
 
 			if (!title) {
-
 				alert('Введите название документа');
-
 				return;
-
 			}
 
 			const shortcode =
-				'[ecp_document pdf="' +
-				this.selectedPdf.id +
-				'" sig="' +
-				this.selectedSig.id +
-				'" title="' +
+				'[ecp_document title="' +
 				title +
+				'" pdf_id="' +
+				this.selectedPdf.id +
+				'" sig_id="' +
+				this.selectedSig.id +
 				'"]';
 
-			this.insertIntoEditor(shortcode);
+			if (this.mode === 'edit') {
+				this.replaceSelectedContent(shortcode);
+			} else {
+				this.insertIntoEditor(shortcode);
+			}
 
 			this.reset();
-
 			this.closeDialog();
 
 		}
+
+		replaceSelectedContent(content) {
+
+			if (
+				this.editor &&
+				typeof this.editor.selection !== 'undefined' &&
+				typeof this.editor.selection.setContent === 'function' &&
+				!this.editor.isHidden()
+			) {
+				this.editor.selection.setContent(content);
+				return;
+			}
+
+			const textarea = document.getElementById('content');
+			if (!textarea) {
+				return;
+			}
+
+			const start = textarea.selectionStart;
+			const end = textarea.selectionEnd;
+
+			textarea.setRangeText(
+				content,
+				start,
+				end,
+				'end'
+			);
+
+			textarea.focus();
+
+		}
+
 		insertIntoEditor(content) {
 
 			if (
@@ -424,57 +450,86 @@
 
 		parseShortcode(shortcode) {
 
-			const match = shortcode.match(
-				/\[ecp_document\s+pdf="(\d+)"\s+sig="(\d+)"\s+title="([^"]+)"\]/
-			);
+			const pdfMatch = shortcode.match(/(?:pdf_id|pdf)="(\d+)"/);
+			const sigMatch = shortcode.match(/(?:sig_id|sig)="(\d+)"/);
+			const titleMatch = shortcode.match(/title="([^"]+)"/);
 
-			if (!match) {
+			if (!pdfMatch || !sigMatch) {
 				return null;
 			}
 
 			return {
-				pdf: Number(match[1]),
-				sig: Number(match[2]),
-				title: match[3]
+				pdf: Number(pdfMatch[1]),
+				sig: Number(sigMatch[1]),
+				title: titleMatch ? titleMatch[1] : ''
 			};
 
 		}
 
 		detectEditingShortcode() {
 
+			this.mode = 'create';
+
 			if (!this.editor) {
-
-				this.mode = 'create';
-
 				return;
-
 			}
 
-			const selected = this.editor.selection.getContent({
-				format: 'text'
-			}).trim();
+			let selected = '';
+
+			if (typeof this.editor.isHidden === 'function' && !this.editor.isHidden()) {
+				selected = this.editor.selection.getContent({
+					format: 'text'
+				}).trim();
+			}
+
+			if (!selected) {
+				const textarea = document.getElementById('content');
+
+				if (textarea) {
+					selected = textarea.value
+						.substring(textarea.selectionStart, textarea.selectionEnd)
+						.trim();
+				}
+			}
 
 			const match = selected.match(
 				/^\[ecp_document\b([\s\S]*)\]$/
 			);
 
 			if (!match) {
-
-				this.mode = 'create';
-
 				console.log('Create mode');
-
 				return;
-
 			}
-
-			this.mode = 'edit';
 
 			const shortcode = this.parseShortcode(selected);
 
-			console.log('Edit mode');
+			if (!shortcode) {
+				console.log('Create mode: invalid shortcode');
+				return;
+			}
 
-			console.log(shortcode);
+			this.mode = 'edit';
+			this.dialog.find('.ecp-document-title').val(shortcode.title);
+
+			this.loadAttachment('pdf', shortcode.pdf);
+			this.loadAttachment('sig', shortcode.sig);
+
+			console.log('Edit mode', shortcode);
+
+		}
+
+		loadAttachment(type, id) {
+
+			if (!id || typeof wp === 'undefined' || !wp.media) {
+				return;
+			}
+
+			const attachment = wp.media.attachment(id);
+
+			attachment.fetch().done(() => {
+				const data = attachment.toJSON();
+				this.setSelection(type, data);
+			});
 
 		}
 

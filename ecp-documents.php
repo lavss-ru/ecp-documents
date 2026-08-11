@@ -4,8 +4,8 @@
  * Plugin URI: https://github.com/lavss-ru/ecp-documents
  * Description: Publish PDF documents with electronic signatures (PDF + SIG) directly in the WordPress editor.
  * Version: 0.1.0
- * Requires at least: 7.0
- * Requires PHP: 8.2
+ * Requires at least: 6.8
+ * Requires PHP: 8.1
  * Author: lavss
  * Author URI: https://github.com/lavss-ru
  * License: GPL-2.0-or-later
