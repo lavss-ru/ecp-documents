@@ -84,11 +84,18 @@ final class Shortcode {
 
                 $sig_url = $this->get_valid_sig_url( $sig_id );
 
-                $sig_serial_number = '';
+                $sig_cert_info = [
+                        'serial_number' => '',
+                        'subject_name'  => '',
+                        'position'      => '',
+                        'issuer_name'   => '',
+                        'valid_from'    => '',
+                        'valid_to'      => '',
+                ];
 
                 if ( '' !== $sig_url ) {
 
-                        $sig_serial_number = $this->get_sig_serial_number( $sig_id );
+                        $sig_cert_info = $this->get_sig_cert_info( $sig_id );
 
                 }
 
@@ -101,25 +108,34 @@ final class Shortcode {
         }
 
         /**
-         * Gets cached serial number for a SIG attachment ID or parses and caches it.
+         * Gets cached certificate info for a SIG attachment ID or parses and caches it.
          *
          * @param int $sig_id SIG Attachment ID.
          *
-         * @return string Serial number string or empty string.
+         * @return array<string,string> Certificate info array or empty structure.
          */
-        private function get_sig_serial_number( int $sig_id ): string {
+        private function get_sig_cert_info( int $sig_id ): array {
+
+                $empty_info = [
+                        'serial_number' => '',
+                        'subject_name'  => '',
+                        'position'      => '',
+                        'issuer_name'   => '',
+                        'valid_from'    => '',
+                        'valid_to'      => '',
+                ];
 
                 if ( $sig_id <= 0 ) {
 
-                        return '';
+                        return $empty_info;
 
                 }
 
-                $cached = get_post_meta( $sig_id, '_ecp_sig_serial_number', true );
+                $cached = get_post_meta( $sig_id, '_ecp_sig_cert_info', true );
 
-                if ( is_string( $cached ) && '' !== $cached ) {
+                if ( is_array( $cached ) && isset( $cached['serial_number'] ) ) {
 
-                        return 'none' === $cached ? '' : $cached;
+                        return $cached;
 
                 }
 
@@ -127,26 +143,29 @@ final class Shortcode {
 
                 if ( ! is_string( $file_path ) || '' === $file_path ) {
 
+                        update_post_meta( $sig_id, '_ecp_sig_cert_info', $empty_info );
                         update_post_meta( $sig_id, '_ecp_sig_serial_number', 'none' );
 
-                        return '';
+                        return $empty_info;
 
                 }
 
                 $parser = new SigParser();
-                $serial = $parser->extract_serial_number( $file_path );
+                $info   = $parser->extract_cert_info( $file_path );
 
-                if ( '' !== $serial ) {
+                update_post_meta( $sig_id, '_ecp_sig_cert_info', $info );
 
-                        update_post_meta( $sig_id, '_ecp_sig_serial_number', $serial );
+                if ( ! empty( $info['serial_number'] ) ) {
 
-                        return $serial;
+                        update_post_meta( $sig_id, '_ecp_sig_serial_number', $info['serial_number'] );
+
+                } else {
+
+                        update_post_meta( $sig_id, '_ecp_sig_serial_number', 'none' );
 
                 }
 
-                update_post_meta( $sig_id, '_ecp_sig_serial_number', 'none' );
-
-                return '';
+                return $info;
 
         }
 

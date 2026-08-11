@@ -127,6 +127,14 @@ final class Assets {
 			ECP_DOCUMENTS_VERSION
 		);
 
+		wp_enqueue_script(
+			'ecp-documents-frontend',
+			ECP_DOCUMENTS_PLUGIN_URL . 'assets/js/frontend.js',
+			[],
+			ECP_DOCUMENTS_VERSION,
+			true
+		);
+
 	}
 
 	/**

@@ -4,12 +4,17 @@
  *
  * Variables:
  *
- * @var string $title
- * @var string $pdf_url
- * @var string $sig_url
+ * @var string               $title
+ * @var string               $pdf_url
+ * @var string               $sig_url
+ * @var int                  $sig_id
+ * @var array<string,string> $sig_cert_info
  */
 
 defined( 'ABSPATH' ) || exit;
+
+$modal_id = 'ecp-modal-' . (int) $sig_id . '-' . wp_unique_id();
+$has_cert = ! empty( $sig_cert_info['serial_number'] ) || ! empty( $sig_cert_info['subject_name'] );
 ?>
 
 <div class="ecp-document">
@@ -24,15 +29,22 @@ defined( 'ABSPATH' ) || exit;
 
                 <div class="ecp-document__status">
 
-                        ✅ Документ подписан электронной подписью
+                        <span class="ecp-document__status-text">
 
-                        <?php if ( ! empty( $sig_serial_number ) ) : ?>
+                                ✅ Документ подписан электронной подписью
 
-                                <div class="ecp-document__serial">
+                        </span>
 
-                                        Серийный номер: <?php echo esc_html( $sig_serial_number ); ?>
+                        <?php if ( $has_cert ) : ?>
 
-                                </div>
+                                <button
+                                        type="button"
+                                        class="ecp-document__view-button"
+                                        data-ecp-modal="<?php echo esc_attr( $modal_id ); ?>">
+
+                                        Смотреть
+
+                                </button>
 
                         <?php endif; ?>
 
@@ -52,6 +64,7 @@ defined( 'ABSPATH' ) || exit;
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         aria-label="Скачать PDF-документ">
+
                                         📄 Скачать PDF
 
                                 </a>
@@ -78,3 +91,115 @@ defined( 'ABSPATH' ) || exit;
         <?php endif; ?>
 
 </div>
+
+<?php if ( $sig_url && $has_cert ) : ?>
+
+        <div id="<?php echo esc_attr( $modal_id ); ?>" class="ecp-modal" aria-hidden="true" role="dialog">
+
+                <div class="ecp-modal__overlay" data-ecp-close></div>
+
+                <div class="ecp-modal__dialog">
+
+                        <div class="ecp-modal__header">
+
+                                <div class="ecp-modal__title-group">
+
+                                        <span class="ecp-modal__icon">🔐</span>
+
+                                        <h3 class="ecp-modal__title">Информация об электронной подписи</h3>
+
+                                </div>
+
+                                <button type="button" class="ecp-modal__close" data-ecp-close aria-label="Закрыть">&times;</button>
+
+                        </div>
+
+                        <div class="ecp-modal__body">
+
+                                <?php if ( ! empty( $sig_cert_info['subject_name'] ) ) : ?>
+
+                                        <div class="ecp-modal__field">
+
+                                                <div class="ecp-modal__label">Владелец сертификата</div>
+
+                                                <div class="ecp-modal__value ecp-modal__value--highlight">
+
+                                                        <?php echo esc_html( $sig_cert_info['subject_name'] ); ?>
+
+                                                </div>
+
+                                        </div>
+
+                                <?php endif; ?>
+
+                                <?php if ( ! empty( $sig_cert_info['position'] ) ) : ?>
+
+                                        <div class="ecp-modal__field">
+
+                                                <div class="ecp-modal__label">Должность</div>
+
+                                                <div class="ecp-modal__value">
+
+                                                        <?php echo esc_html( $sig_cert_info['position'] ); ?>
+
+                                                </div>
+
+                                        </div>
+
+                                <?php endif; ?>
+
+                                <?php if ( ! empty( $sig_cert_info['serial_number'] ) ) : ?>
+
+                                        <div class="ecp-modal__field">
+
+                                                <div class="ecp-modal__label">Серийный номер</div>
+
+                                                <div class="ecp-modal__value ecp-modal__value--mono">
+
+                                                        <?php echo esc_html( $sig_cert_info['serial_number'] ); ?>
+
+                                                </div>
+
+                                        </div>
+
+                                <?php endif; ?>
+
+                                <?php if ( ! empty( $sig_cert_info['issuer_name'] ) ) : ?>
+
+                                        <div class="ecp-modal__field">
+
+                                                <div class="ecp-modal__label">Кем выдан сертификат</div>
+
+                                                <div class="ecp-modal__value">
+
+                                                        <?php echo esc_html( $sig_cert_info['issuer_name'] ); ?>
+
+                                                </div>
+
+                                        </div>
+
+                                <?php endif; ?>
+
+                                <?php if ( ! empty( $sig_cert_info['valid_from'] ) || ! empty( $sig_cert_info['valid_to'] ) ) : ?>
+
+                                        <div class="ecp-modal__field">
+
+                                                <div class="ecp-modal__label">Срок действия сертификата</div>
+
+                                                <div class="ecp-modal__value">
+
+                                                        с <?php echo esc_html( $sig_cert_info['valid_from'] ); ?> по <?php echo esc_html( $sig_cert_info['valid_to'] ); ?>
+
+                                                </div>
+
+                                        </div>
+
+                                <?php endif; ?>
+
+                        </div>
+
+                </div>
+
+        </div>
+
+<?php endif; ?>

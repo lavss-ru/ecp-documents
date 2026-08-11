@@ -17,6 +17,56 @@ defined( 'ABSPATH' ) || exit;
 final class SigParser {
 
         /**
+         * Extracts full certificate details from a SIG file.
+         *
+         * @param string $file_path Absolute path to .sig file.
+         *
+         * @return array<string,string> Array with certificate info or empty values on failure.
+         */
+        public function extract_cert_info( string $file_path ): array {
+
+                $empty_result = [
+                        'serial_number' => '',
+                        'subject_name'  => '',
+                        'position'      => '',
+                        'issuer_name'   => '',
+                        'valid_from'    => '',
+                        'valid_to'      => '',
+                ];
+
+                if ( '' === $file_path || ! file_exists( $file_path ) || ! is_readable( $file_path ) ) {
+
+                        return $empty_result;
+
+                }
+
+                $content = file_get_contents( $file_path );
+
+                if ( ! is_string( $content ) || '' === $content ) {
+
+                        return $empty_result;
+
+                }
+
+                $parsed = $this->parse_x509_from_openssl( $file_path, $content );
+
+                if ( null === $parsed ) {
+
+                        $parsed = $this->parse_x509_from_der_scan( $content );
+
+                }
+
+                if ( ! is_array( $parsed ) ) {
+
+                        return $empty_result;
+
+                }
+
+                return $this->format_cert_info( $parsed );
+
+        }
+
+        /**
          * Extracts certificate serial number in HEX format from a SIG file.
          *
          * @param string $file_path Absolute path to .sig file.
@@ -25,49 +75,27 @@ final class SigParser {
          */
         public function extract_serial_number( string $file_path ): string {
 
-                if ( '' === $file_path || ! file_exists( $file_path ) || ! is_readable( $file_path ) ) {
+                $info = $this->extract_cert_info( $file_path );
 
-                        return '';
-
-                }
-
-                $content = file_get_contents( $file_path );
-
-                if ( ! is_string( $content ) || '' === $content ) {
-
-                        return '';
-
-                }
-
-                // 1. Try standard OpenSSL PKCS7/CMS functions first.
-                $serial = $this->extract_via_openssl( $file_path, $content );
-
-                if ( '' !== $serial ) {
-
-                        return $serial;
-
-                }
-
-                // 2. Fallback: extract X.509 certificate DER structure directly from binary SIG content.
-                return $this->extract_via_der_scan( $content );
+                return $info['serial_number'] ?? '';
 
         }
 
         /**
-         * Extracts serial number using standard OpenSSL PKCS7 / CMS functions.
+         * Parses X.509 certificate using standard OpenSSL PKCS7 / CMS functions.
          *
          * @param string $file_path File path.
          * @param string $content File content.
          *
-         * @return string
+         * @return array<string,mixed>|null Parsed array or null on failure.
          */
-        private function extract_via_openssl( string $file_path, string $content ): string {
+        private function parse_x509_from_openssl( string $file_path, string $content ): ?array {
 
                 $tmp_cert = function_exists( 'wp_tempnam' ) ? wp_tempnam( 'ecp_cert_' ) : tempnam( sys_get_temp_dir(), 'ecp_cert_' );
 
                 if ( ! $tmp_cert ) {
 
-                        return '';
+                        return null;
 
                 }
 
@@ -88,7 +116,7 @@ final class SigParser {
 
                 }
 
-                $serial = '';
+                $parsed = null;
 
                 if ( file_exists( $tmp_cert ) ) {
 
@@ -96,11 +124,11 @@ final class SigParser {
 
                         if ( is_string( $cert_pem ) && '' !== $cert_pem ) {
 
-                                $parsed = @openssl_x509_parse( $cert_pem );
+                                $result = @openssl_x509_parse( $cert_pem );
 
-                                if ( is_array( $parsed ) && ! empty( $parsed['serialNumberHex'] ) ) {
+                                if ( is_array( $result ) && ! empty( $result['serialNumberHex'] ) ) {
 
-                                        $serial = strtoupper( (string) $parsed['serialNumberHex'] );
+                                        $parsed = $result;
 
                                 }
 
@@ -110,18 +138,18 @@ final class SigParser {
 
                 }
 
-                return $serial;
+                return $parsed;
 
         }
 
         /**
-         * Fallback: Scans binary DER content for embedded X.509 certificates and extracts serial number.
+         * Scans binary DER content for embedded X.509 certificates and parses certificate structure.
          *
          * @param string $content Binary file content.
          *
-         * @return string
+         * @return array<string,mixed>|null Parsed array or null on failure.
          */
-        private function extract_via_der_scan( string $content ): string {
+        private function parse_x509_from_der_scan( string $content ): ?array {
 
                 $len = strlen( $content );
 
@@ -148,7 +176,7 @@ final class SigParser {
 
                                         if ( is_array( $parsed ) && ! empty( $parsed['serialNumberHex'] ) ) {
 
-                                                return strtoupper( (string) $parsed['serialNumberHex'] );
+                                                return $parsed;
 
                                         }
 
@@ -158,7 +186,55 @@ final class SigParser {
 
                 }
 
-                return '';
+                return null;
+
+        }
+
+        /**
+         * Formats parsed X.509 array into plugin certificate info structure.
+         *
+         * @param array<string,mixed> $parsed Parsed X.509 array from openssl_x509_parse.
+         *
+         * @return array<string,string>
+         */
+        private function format_cert_info( array $parsed ): array {
+
+                $subject = is_array( $parsed['subject'] ?? null ) ? $parsed['subject'] : [];
+                $issuer  = is_array( $parsed['issuer'] ?? null )  ? $parsed['issuer']  : [];
+
+                $subject_name = '';
+
+                if ( ! empty( $subject['SN'] ) || ! empty( $subject['GN'] ) ) {
+
+                        $subject_name = trim( (string) ( $subject['SN'] ?? '' ) . ' ' . (string) ( $subject['GN'] ?? '' ) );
+
+                } elseif ( ! empty( $subject['CN'] ) ) {
+
+                        $subject_name = (string) $subject['CN'];
+
+                } elseif ( ! empty( $subject['O'] ) ) {
+
+                        $subject_name = (string) $subject['O'];
+
+                }
+
+                $position = ! empty( $subject['title'] ) ? (string) $subject['title'] : '';
+
+                $issuer_name = ! empty( $issuer['CN'] ) ? (string) $issuer['CN'] : ( ! empty( $issuer['O'] ) ? (string) $issuer['O'] : '' );
+
+                $valid_from = isset( $parsed['validFrom_time_t'] ) ? date( 'd.m.Y', (int) $parsed['validFrom_time_t'] ) : '';
+                $valid_to   = isset( $parsed['validTo_time_t'] )   ? date( 'd.m.Y', (int) $parsed['validTo_time_t'] )   : '';
+
+                $serial_number = ! empty( $parsed['serialNumberHex'] ) ? strtoupper( (string) $parsed['serialNumberHex'] ) : '';
+
+                return [
+                        'serial_number' => $serial_number,
+                        'subject_name'  => $subject_name,
+                        'position'      => $position,
+                        'issuer_name'   => $issuer_name,
+                        'valid_from'    => $valid_from,
+                        'valid_to'      => $valid_to,
+                ];
 
         }
 
