@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Lavss\ECPDocuments\Shortcode;
 
+use Lavss\ECPDocuments\Services\SigParser;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -82,11 +84,69 @@ final class Shortcode {
 
                 $sig_url = $this->get_valid_sig_url( $sig_id );
 
+                $sig_serial_number = '';
+
+                if ( '' !== $sig_url ) {
+
+                        $sig_serial_number = $this->get_sig_serial_number( $sig_id );
+
+                }
+
                 ob_start();
 
                 require ECP_DOCUMENTS_PLUGIN_DIR . 'templates/document.php';
 
                 return (string) ob_get_clean();
+
+        }
+
+        /**
+         * Gets cached serial number for a SIG attachment ID or parses and caches it.
+         *
+         * @param int $sig_id SIG Attachment ID.
+         *
+         * @return string Serial number string or empty string.
+         */
+        private function get_sig_serial_number( int $sig_id ): string {
+
+                if ( $sig_id <= 0 ) {
+
+                        return '';
+
+                }
+
+                $cached = get_post_meta( $sig_id, '_ecp_sig_serial_number', true );
+
+                if ( is_string( $cached ) && '' !== $cached ) {
+
+                        return 'none' === $cached ? '' : $cached;
+
+                }
+
+                $file_path = get_attached_file( $sig_id );
+
+                if ( ! is_string( $file_path ) || '' === $file_path ) {
+
+                        update_post_meta( $sig_id, '_ecp_sig_serial_number', 'none' );
+
+                        return '';
+
+                }
+
+                $parser = new SigParser();
+                $serial = $parser->extract_serial_number( $file_path );
+
+                if ( '' !== $serial ) {
+
+                        update_post_meta( $sig_id, '_ecp_sig_serial_number', $serial );
+
+                        return $serial;
+
+                }
+
+                update_post_meta( $sig_id, '_ecp_sig_serial_number', 'none' );
+
+                return '';
 
         }
 

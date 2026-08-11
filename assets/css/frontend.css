@@ -40,6 +40,20 @@
 
 }
 
+.ecp-document__serial {
+
+        margin-top: 6px;
+
+        font-size: 13px;
+
+        font-weight: 400;
+
+        color: #4b5563;
+
+        word-break: break-all;
+
+}
+
 .ecp-document__actions {
 
         display: flex;

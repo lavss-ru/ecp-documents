@@ -26,6 +26,16 @@ defined( 'ABSPATH' ) || exit;
 
                         ✅ Документ подписан электронной подписью
 
+                        <?php if ( ! empty( $sig_serial_number ) ) : ?>
+
+                                <div class="ecp-document__serial">
+
+                                        Серийный номер: <?php echo esc_html( $sig_serial_number ); ?>
+
+                                </div>
+
+                        <?php endif; ?>
+
                 </div>
 
         <?php endif; ?>
