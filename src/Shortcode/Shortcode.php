@@ -82,9 +82,30 @@ final class Shortcode {
 
                 }
 
+                $pdf_file_size = '';
+
+                if ( $pdf_id > 0 ) {
+
+                        $file_path = get_attached_file( $pdf_id );
+
+                        if ( is_string( $file_path ) && file_exists( $file_path ) ) {
+
+                                $size_bytes = (int) filesize( $file_path );
+
+                                if ( $size_bytes > 0 ) {
+
+                                        $pdf_file_size = size_format( $size_bytes );
+
+                                }
+
+                        }
+
+                }
+
                 $sig_url = $this->get_valid_sig_url( $sig_id );
 
                 $sig_cert_info = [
+                        'organization'  => '',
                         'serial_number' => '',
                         'subject_name'  => '',
                         'position'      => '',
@@ -117,6 +138,7 @@ final class Shortcode {
         private function get_sig_cert_info( int $sig_id ): array {
 
                 $empty_info = [
+                        'organization'  => '',
                         'serial_number' => '',
                         'subject_name'  => '',
                         'position'      => '',
@@ -133,9 +155,9 @@ final class Shortcode {
 
                 $cached = get_post_meta( $sig_id, '_ecp_sig_cert_info', true );
 
-                if ( is_array( $cached ) && isset( $cached['serial_number'] ) ) {
+                if ( is_array( $cached ) && ( isset( $cached['serial_number'] ) || isset( $cached['organization'] ) ) ) {
 
-                        return $cached;
+                        return array_merge( $empty_info, $cached );
 
                 }
 

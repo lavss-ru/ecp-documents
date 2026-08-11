@@ -1,34 +1,22 @@
 .ecp-document {
 
-        max-width: 640px;
+        max-width: 720px;
 
-        margin: 24px 0;
+        margin: 16px 0;
 
         background: #ffffff;
 
-        border: 1px solid #dbe4ef;
+        border: 1px solid #e2e8f0;
 
-        border-radius: 12px;
+        border-radius: 10px;
 
         overflow: hidden;
 
-        box-shadow: 0 2px 8px rgba(15, 23, 42, .05);
+        box-shadow: 0 1px 3px rgba(15, 23, 42, .06);
 
 }
 
-.ecp-document__title {
-
-        padding: 18px 22px;
-
-        font-size: 20px;
-
-        font-weight: 600;
-
-        color: #1f2937;
-
-}
-
-.ecp-document__status {
+.ecp-document__row {
 
         display: flex;
 
@@ -36,29 +24,63 @@
 
         justify-content: space-between;
 
-        gap: 12px;
+        gap: 16px;
 
-        padding: 16px 22px;
-
-        border-top: 1px solid #eef2f7;
-
-        color: #15803d;
-
-        font-weight: 500;
+        padding: 14px 18px;
 
 }
 
-.ecp-document__status-text {
+.ecp-document__left {
 
         display: flex;
 
         align-items: center;
 
-        gap: 6px;
+        gap: 10px;
+
+        min-width: 0;
+
+        flex: 1;
 
 }
 
-.ecp-document__view-button {
+.ecp-document__icon {
+
+        font-size: 20px;
+
+        flex-shrink: 0;
+
+}
+
+.ecp-document__title {
+
+        font-size: 15px;
+
+        font-weight: 600;
+
+        color: #1e293b;
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+}
+
+.ecp-document__right {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 14px;
+
+        flex-shrink: 0;
+
+}
+
+.ecp-document__sig-badge {
 
         display: inline-flex;
 
@@ -66,19 +88,17 @@
 
         justify-content: center;
 
-        padding: 6px 14px;
+        width: 32px;
 
-        background: #f0fdf4;
+        height: 32px;
 
-        border: 1px solid #bbf7d0;
+        background: #f1f5f9;
 
-        border-radius: 6px;
+        border: 1px solid #cbd5e1;
 
-        color: #166534;
+        border-radius: 8px;
 
-        font-size: 13px;
-
-        font-weight: 600;
+        font-size: 16px;
 
         cursor: pointer;
 
@@ -86,69 +106,73 @@
 
 }
 
-.ecp-document__view-button:hover {
+.ecp-document__sig-badge:hover {
 
-        background: #dcfce7;
+        background: #e2e8f0;
 
-        border-color: #86efac;
+        border-color: #94a3b8;
 
-        color: #14532d;
-
-}
-
-.ecp-document__actions {
-
-        display: flex;
-
-        gap: 12px;
-
-        padding: 18px 22px;
-
-        border-top: 1px solid #eef2f7;
+        transform: scale(1.05);
 
 }
 
-.ecp-document__button {
+.ecp-document__size {
+
+        font-size: 13px;
+
+        font-weight: 500;
+
+        color: #64748b;
+
+}
+
+.ecp-document__download-button {
 
         display: inline-flex;
 
         align-items: center;
 
-        gap: 6px;
+        justify-content: center;
 
-        padding: 10px 16px;
+        padding: 7px 16px;
 
-        border-radius: 8px;
+        background: #2563eb;
+
+        border-radius: 6px;
+
+        color: #ffffff;
+
+        font-size: 13px;
 
         font-weight: 600;
 
         text-decoration: none;
 
-        transition: .2s;
+        transition: background .2s ease;
 
 }
 
-.ecp-document__button--pdf {
+.ecp-document__download-button:hover {
 
-        background: #dc2626;
+        background: #1d4ed8;
 
-        color: #fff;
+        color: #ffffff;
 
 }
 
-.ecp-document__button--sig {
+.ecp-document__download-button--sig {
 
         background: #7c3aed;
 
-        color: #fff;
+        color: #ffffff;
 
 }
 
-.ecp-document__button:hover {
+.ecp-document__download-button--sig:hover {
 
-        opacity: .9;
+        background: #6d28d9;
 
-        color: #fff;
+        color: #ffffff;
 
 }
 
@@ -216,7 +240,7 @@
 
         width: 100%;
 
-        max-width: 520px;
+        max-width: 540px;
 
         background: #ffffff;
 
@@ -248,7 +272,7 @@
 
         justify-content: space-between;
 
-        padding: 20px 24px;
+        padding: 18px 24px;
 
         background: #f8fafc;
 
@@ -344,15 +368,23 @@
 
 }
 
+.ecp-modal__field--org {
+
+        padding-bottom: 14px;
+
+        border-bottom: 1px solid #f1f5f9;
+
+}
+
 .ecp-modal__label {
 
-        font-size: 12px;
+        font-size: 11px;
 
-        font-weight: 600;
+        font-weight: 700;
 
         text-transform: uppercase;
 
-        letter-spacing: .05em;
+        letter-spacing: .06em;
 
         color: #64748b;
 
@@ -370,11 +402,23 @@
 
 }
 
+.ecp-modal__value--org {
+
+        font-size: 16px;
+
+        font-weight: 700;
+
+        color: #0f172a;
+
+        line-height: 1.4;
+
+}
+
 .ecp-modal__value--highlight {
 
         font-size: 15px;
 
-        font-weight: 700;
+        font-weight: 600;
 
         color: #0f172a;
 
@@ -394,31 +438,35 @@
 
 @media (max-width: 640px) {
 
-        .ecp-document__actions {
-
-                flex-direction: column;
-
-        }
-
-        .ecp-document__button {
-
-                width: 100%;
-
-                justify-content: center;
-
-        }
-
-        .ecp-document__status {
+        .ecp-document__row {
 
                 flex-direction: column;
 
                 align-items: flex-start;
 
+                gap: 12px;
+
         }
 
-        .ecp-document__view-button {
+        .ecp-document__title {
+
+                white-space: normal;
+
+        }
+
+        .ecp-document__right {
 
                 width: 100%;
+
+                justify-content: space-between;
+
+        }
+
+        .ecp-document__download-button {
+
+                flex: 1;
+
+                text-align: center;
 
         }
 

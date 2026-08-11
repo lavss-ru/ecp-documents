@@ -6,6 +6,7 @@
  *
  * @var string               $title
  * @var string               $pdf_url
+ * @var string               $pdf_file_size
  * @var string               $sig_url
  * @var int                  $sig_id
  * @var array<string,string> $sig_cert_info
@@ -14,58 +15,54 @@
 defined( 'ABSPATH' ) || exit;
 
 $modal_id = 'ecp-modal-' . (int) $sig_id . '-' . wp_unique_id();
-$has_cert = ! empty( $sig_cert_info['serial_number'] ) || ! empty( $sig_cert_info['subject_name'] );
+$has_cert = ! empty( $sig_cert_info['serial_number'] ) || ! empty( $sig_cert_info['subject_name'] ) || ! empty( $sig_cert_info['organization'] );
 ?>
 
 <div class="ecp-document">
 
-        <div class="ecp-document__title">
+        <div class="ecp-document__row">
 
-                📄 <?php echo esc_html( $title ); ?>
+                <div class="ecp-document__left">
 
-        </div>
+                        <span class="ecp-document__icon">📄</span>
 
-        <?php if ( $sig_url ) : ?>
+                        <span class="ecp-document__title"><?php echo esc_html( $title ); ?></span>
 
-                <div class="ecp-document__status">
+                </div>
 
-                        <span class="ecp-document__status-text">
+                <div class="ecp-document__right">
 
-                                ✅ Документ подписан электронной подписью
-
-                        </span>
-
-                        <?php if ( $has_cert ) : ?>
+                        <?php if ( $sig_url && $has_cert ) : ?>
 
                                 <button
                                         type="button"
-                                        class="ecp-document__view-button"
-                                        data-ecp-modal="<?php echo esc_attr( $modal_id ); ?>">
+                                        class="ecp-document__sig-badge"
+                                        data-ecp-modal="<?php echo esc_attr( $modal_id ); ?>"
+                                        title="Информация об электронной подписи"
+                                        aria-label="Информация об электронной подписи">
 
-                                        Смотреть
+                                        🔐
 
                                 </button>
 
                         <?php endif; ?>
 
-                </div>
+                        <?php if ( ! empty( $pdf_file_size ) ) : ?>
 
-        <?php endif; ?>
+                                <span class="ecp-document__size"><?php echo esc_html( $pdf_file_size ); ?></span>
 
-        <?php if ( $pdf_url || $sig_url ) : ?>
-
-                <div class="ecp-document__actions">
+                        <?php endif; ?>
 
                         <?php if ( $pdf_url ) : ?>
 
                                 <a
-                                        class="ecp-document__button ecp-document__button--pdf"
+                                        class="ecp-document__download-button"
                                         href="<?php echo esc_url( $pdf_url ); ?>"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         aria-label="Скачать PDF-документ">
 
-                                        📄 Скачать PDF
+                                        Скачать
 
                                 </a>
 
@@ -74,13 +71,14 @@ $has_cert = ! empty( $sig_cert_info['serial_number'] ) || ! empty( $sig_cert_inf
                         <?php if ( $sig_url ) : ?>
 
                                 <a
-                                        class="ecp-document__button ecp-document__button--sig"
+                                        class="ecp-document__download-button ecp-document__download-button--sig"
                                         href="<?php echo esc_url( $sig_url ); ?>"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        aria-label="Скачать файл электронной подписи">
+                                        aria-label="Скачать файл электронной подписи"
+                                        title="Скачать файл электронной подписи (.SIG)">
 
-                                        🔐 Скачать SIG
+                                        SIG
 
                                 </a>
 
@@ -88,7 +86,7 @@ $has_cert = ! empty( $sig_cert_info['serial_number'] ) || ! empty( $sig_cert_inf
 
                 </div>
 
-        <?php endif; ?>
+        </div>
 
 </div>
 
@@ -116,11 +114,27 @@ $has_cert = ! empty( $sig_cert_info['serial_number'] ) || ! empty( $sig_cert_inf
 
                         <div class="ecp-modal__body">
 
+                                <?php if ( ! empty( $sig_cert_info['organization'] ) ) : ?>
+
+                                        <div class="ecp-modal__field ecp-modal__field--org">
+
+                                                <div class="ecp-modal__label">Организация</div>
+
+                                                <div class="ecp-modal__value ecp-modal__value--org">
+
+                                                        <?php echo esc_html( $sig_cert_info['organization'] ); ?>
+
+                                                </div>
+
+                                        </div>
+
+                                <?php endif; ?>
+
                                 <?php if ( ! empty( $sig_cert_info['subject_name'] ) ) : ?>
 
                                         <div class="ecp-modal__field">
 
-                                                <div class="ecp-modal__label">Владелец сертификата</div>
+                                                <div class="ecp-modal__label">Подписант</div>
 
                                                 <div class="ecp-modal__value ecp-modal__value--highlight">
 
@@ -148,22 +162,6 @@ $has_cert = ! empty( $sig_cert_info['serial_number'] ) || ! empty( $sig_cert_inf
 
                                 <?php endif; ?>
 
-                                <?php if ( ! empty( $sig_cert_info['serial_number'] ) ) : ?>
-
-                                        <div class="ecp-modal__field">
-
-                                                <div class="ecp-modal__label">Серийный номер</div>
-
-                                                <div class="ecp-modal__value ecp-modal__value--mono">
-
-                                                        <?php echo esc_html( $sig_cert_info['serial_number'] ); ?>
-
-                                                </div>
-
-                                        </div>
-
-                                <?php endif; ?>
-
                                 <?php if ( ! empty( $sig_cert_info['issuer_name'] ) ) : ?>
 
                                         <div class="ecp-modal__field">
@@ -173,6 +171,22 @@ $has_cert = ! empty( $sig_cert_info['serial_number'] ) || ! empty( $sig_cert_inf
                                                 <div class="ecp-modal__value">
 
                                                         <?php echo esc_html( $sig_cert_info['issuer_name'] ); ?>
+
+                                                </div>
+
+                                        </div>
+
+                                <?php endif; ?>
+
+                                <?php if ( ! empty( $sig_cert_info['serial_number'] ) ) : ?>
+
+                                        <div class="ecp-modal__field">
+
+                                                <div class="ecp-modal__label">Серийный номер</div>
+
+                                                <div class="ecp-modal__value ecp-modal__value--mono">
+
+                                                        <?php echo esc_html( $sig_cert_info['serial_number'] ); ?>
 
                                                 </div>
 

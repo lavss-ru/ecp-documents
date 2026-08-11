@@ -26,6 +26,7 @@ final class SigParser {
         public function extract_cert_info( string $file_path ): array {
 
                 $empty_result = [
+                        'organization'  => '',
                         'serial_number' => '',
                         'subject_name'  => '',
                         'position'      => '',
@@ -202,6 +203,8 @@ final class SigParser {
                 $subject = is_array( $parsed['subject'] ?? null ) ? $parsed['subject'] : [];
                 $issuer  = is_array( $parsed['issuer'] ?? null )  ? $parsed['issuer']  : [];
 
+                $organization = ! empty( $subject['O'] ) ? (string) $subject['O'] : ( ! empty( $subject['CN'] ) ? (string) $subject['CN'] : '' );
+
                 $subject_name = '';
 
                 if ( ! empty( $subject['SN'] ) || ! empty( $subject['GN'] ) ) {
@@ -228,6 +231,7 @@ final class SigParser {
                 $serial_number = ! empty( $parsed['serialNumberHex'] ) ? strtoupper( (string) $parsed['serialNumberHex'] ) : '';
 
                 return [
+                        'organization'  => $organization,
                         'serial_number' => $serial_number,
                         'subject_name'  => $subject_name,
                         'position'      => $position,
