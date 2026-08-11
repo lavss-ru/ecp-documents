@@ -400,6 +400,10 @@
 
         line-height: 1.5;
 
+        overflow-wrap: break-word;
+
+        word-break: break-word;
+
 }
 
 .ecp-modal__value--org {
@@ -411,6 +415,10 @@
         color: #0f172a;
 
         line-height: 1.4;
+
+        overflow-wrap: break-word;
+
+        word-break: break-word;
 
 }
 
