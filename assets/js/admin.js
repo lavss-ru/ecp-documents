@@ -85,6 +85,44 @@
 
 		}
 
+		isValidSigExtension(filename) {
+
+			return typeof filename === 'string' && /\.sig$/i.test(filename);
+
+		}
+
+		getExpectedSigFilename(pdfFilename) {
+
+			if (!pdfFilename || typeof pdfFilename !== 'string') {
+
+				return '';
+
+			}
+
+			return pdfFilename + '.sig';
+
+		}
+
+		validatePdfSigPair(pdfFilename, sigFilename) {
+
+			if (!pdfFilename || !sigFilename) {
+
+				return false;
+
+			}
+
+			if (!this.isValidSigExtension(sigFilename)) {
+
+				return false;
+
+			}
+
+			const expected = this.getExpectedSigFilename(pdfFilename);
+
+			return sigFilename.toLowerCase() === expected.toLowerCase();
+
+		}
+
 		updateInsertButtonState() {
 
 			if (!this.dialog) {
@@ -93,13 +131,17 @@
 
 			}
 
-			const enabled =
-				this.selectedPdf.id !== null &&
-				this.selectedSig.id !== null &&
-				this.dialog
-					.find('.ecp-document-title')
-					.val()
-					.trim() !== '';
+			const hasTitle = this.dialog
+				.find('.ecp-document-title')
+				.val()
+				.trim() !== '';
+
+			const hasPdf = this.selectedPdf && this.selectedPdf.id !== null && !!this.selectedPdf.filename;
+			const hasSig = this.selectedSig && this.selectedSig.id !== null && !!this.selectedSig.filename;
+
+			const isValidPair = hasPdf && hasSig && this.validatePdfSigPair(this.selectedPdf.filename, this.selectedSig.filename);
+
+			const enabled = hasTitle && isValidPair;
 
 			this.dialog
 				.find('.ecp-insert-document')
@@ -163,6 +205,14 @@
 		}
 
 		openMedia(type) {
+
+			if (type === 'sig' && (!this.selectedPdf || !this.selectedPdf.id || !this.selectedPdf.filename)) {
+
+				alert('Сначала выберите PDF-документ.');
+
+				return;
+
+			}
 
 			if (!this.frames[type]) {
 
@@ -237,6 +287,28 @@
 				.first()
 				.toJSON();
 
+			if (type === 'sig') {
+
+				if (!this.selectedPdf || !this.selectedPdf.id || !this.selectedPdf.filename) {
+
+					alert('Сначала выберите PDF-документ.');
+
+					return;
+
+				}
+
+				const expected = this.getExpectedSigFilename(this.selectedPdf.filename);
+
+				if (!this.isValidSigExtension(attachment.filename) || !this.validatePdfSigPair(this.selectedPdf.filename, attachment.filename)) {
+
+					alert('Выбранный SIG-файл не соответствует PDF-документу. Ожидается: ' + expected);
+
+					return;
+
+				}
+
+			}
+
 			this.setSelection(type, attachment);
 
 		}
@@ -255,6 +327,18 @@
 				this.selectedPdf = selection;
 
 				this.fillDocumentTitle(selection);
+
+				if (this.selectedSig && this.selectedSig.id && this.selectedSig.filename) {
+
+					if (!this.validatePdfSigPair(selection.filename, this.selectedSig.filename)) {
+
+						this.selectedSig = this.createEmptySelection();
+
+						this.updateFileUI('sig');
+
+					}
+
+				}
 
 			} else {
 
@@ -325,12 +409,12 @@
 		}
 		insertDocument() {
 
-			if (!this.selectedPdf.id) {
+			if (!this.selectedPdf || !this.selectedPdf.id) {
 				alert('Выберите PDF-документ');
 				return;
 			}
 
-			if (!this.selectedSig.id) {
+			if (!this.selectedSig || !this.selectedSig.id) {
 				alert('Выберите SIG-файл');
 				return;
 			}
@@ -342,6 +426,12 @@
 
 			if (!title) {
 				alert('Введите название документа');
+				return;
+			}
+
+			if (!this.isValidSigExtension(this.selectedSig.filename) || !this.validatePdfSigPair(this.selectedPdf.filename, this.selectedSig.filename)) {
+				const expected = this.getExpectedSigFilename(this.selectedPdf.filename);
+				alert('Выбранный SIG-файл не соответствует PDF-документу. Ожидается: ' + expected);
 				return;
 			}
 

@@ -258,7 +258,7 @@ final class Shortcode {
 
                 $file_path          = get_attached_file( $attachment_id );
                 $extension          = is_string( $file_path ) ? strtolower( pathinfo( $file_path, PATHINFO_EXTENSION ) ) : '';
-                $allowed_extensions = [ 'sig', 'p7s' ];
+                $allowed_extensions = [ 'sig' ];
 
                 if ( ! in_array( $mime_type, $allowed_mime_types, true ) && ! in_array( $extension, $allowed_extensions, true ) ) {
 
