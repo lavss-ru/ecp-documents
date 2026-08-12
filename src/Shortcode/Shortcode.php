@@ -94,7 +94,7 @@ final class Shortcode {
 
                                 if ( $size_bytes > 0 ) {
 
-                                        $pdf_file_size = size_format( $size_bytes );
+                                        $pdf_file_size = $this->format_file_size( $size_bytes );
 
                                 }
 
@@ -119,6 +119,9 @@ final class Shortcode {
                         $sig_cert_info = $this->get_sig_cert_info( $sig_id );
 
                 }
+
+                $sig_icon_svg   = $this->get_sig_icon_svg( 26, 26, 'ecp-document__sig-icon' );
+                $modal_icon_svg = $this->get_sig_icon_svg( 20, 20, 'ecp-modal__icon-svg' );
 
                 ob_start();
 
@@ -269,6 +272,81 @@ final class Shortcode {
                 $url = wp_get_attachment_url( $attachment_id );
 
                 return is_string( $url ) ? $url : '';
+
+        }
+
+        /**
+         * Formats file size in megabytes (MB) according to Gosweb style guidelines.
+         *
+         * @param int $size_bytes Size in bytes.
+         *
+         * @return string Formatted size string (e.g., "0,03 МБ", "0,83 МБ", "2 МБ", "1,5 МБ").
+         */
+        private function format_file_size( int $size_bytes ): string {
+
+                if ( $size_bytes <= 0 ) {
+
+                        return '';
+
+                }
+
+                $mb = $size_bytes / ( 1024 * 1024 );
+
+                $rounded = round( $mb, 2 );
+
+                if ( $rounded <= 0 && $size_bytes > 0 ) {
+
+                        $rounded = 0.01;
+
+                }
+
+                $formatted = number_format( $rounded, 2, ',', '' );
+
+                if ( false !== strpos( $formatted, ',' ) ) {
+
+                        $formatted = rtrim( rtrim( $formatted, '0' ), ',' );
+
+                }
+
+                return $formatted . ' МБ';
+
+        }
+
+        /**
+         * Returns reusable SVG icon markup for electronic signature from assets/images/sig-icon.svg.
+         *
+         * @param int    $width Width in px.
+         * @param int    $height Height in px.
+         * @param string $class CSS class name.
+         *
+         * @return string SVG HTML markup.
+         */
+        public function get_sig_icon_svg( int $width = 24, int $height = 24, string $class = 'ecp-document__sig-icon' ): string {
+
+                $svg_file = ECP_DOCUMENTS_PLUGIN_DIR . 'assets/images/sig-icon.svg';
+
+                if ( ! file_exists( $svg_file ) ) {
+
+                        return '';
+
+                }
+
+                $svg_content = file_get_contents( $svg_file );
+
+                if ( ! is_string( $svg_content ) || '' === $svg_content ) {
+
+                        return '';
+
+                }
+
+                $replaced = preg_replace(
+                        '/<svg\b/',
+                        sprintf( '<svg class="%s" width="%d" height="%d"', esc_attr( $class ), (int) $width, (int) $height ),
+                        $svg_content,
+                        1
+                );
+
+                return is_string( $replaced ) ? $replaced : $svg_content;
 
         }
 

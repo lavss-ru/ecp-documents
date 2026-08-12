@@ -26,7 +26,7 @@ $has_cert = ! empty( $sig_cert_info['serial_number'] ) || ! empty( $sig_cert_inf
 
                         <span class="ecp-document__icon">📄</span>
 
-                        <span class="ecp-document__title"><?php echo esc_html( $title ); ?></span>
+                        <span class="ecp-document__title" title="<?php echo esc_attr( $title ); ?>" data-title="<?php echo esc_attr( $title ); ?>"><?php echo esc_html( $title ); ?></span>
 
                 </div>
 
@@ -41,7 +41,7 @@ $has_cert = ! empty( $sig_cert_info['serial_number'] ) || ! empty( $sig_cert_inf
                                         title="Информация об электронной подписи"
                                         aria-label="Информация об электронной подписи">
 
-                                        🔐
+                                        <?php echo isset( $sig_icon_svg ) ? $sig_icon_svg : ''; ?>
 
                                 </button>
 
@@ -102,7 +102,9 @@ $has_cert = ! empty( $sig_cert_info['serial_number'] ) || ! empty( $sig_cert_inf
 
                                 <div class="ecp-modal__title-group">
 
-                                        <span class="ecp-modal__icon">🔐</span>
+                                        <span class="ecp-modal__icon">
+                                                <?php echo isset( $modal_icon_svg ) ? $modal_icon_svg : ''; ?>
+                                        </span>
 
                                         <h3 class="ecp-modal__title">Информация об электронной подписи</h3>
 

@@ -7,6 +7,8 @@
 
 			text: 'Документ с ЭП',
 
+			icon: 'ecp-icon',
+
 			onclick: function () {
 
 				if (

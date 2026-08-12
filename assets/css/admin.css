@@ -157,3 +157,13 @@
 		transform: translateY(0);
 	}
 }
+
+/* Classic Editor button icon */
+.mce-btn button .mce-i-ecp-icon,
+i.mce-i-ecp-icon,
+i.mce-i-ecp_documents {
+	background-image: url('../images/sig-icon.svg') !important;
+	background-position: center !important;
+	background-repeat: no-repeat !important;
+	background-size: 16px 16px !important;
+}

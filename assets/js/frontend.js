@@ -65,4 +65,18 @@
 
 	});
 
+	document.addEventListener('mouseover', function (event) {
+
+		var titleEl = event.target.closest('.ecp-document__title');
+
+		if (titleEl) {
+			if (titleEl.scrollHeight > titleEl.clientHeight || titleEl.scrollWidth > titleEl.clientWidth) {
+				titleEl.setAttribute('data-overflow', 'true');
+			} else {
+				titleEl.removeAttribute('data-overflow');
+			}
+		}
+
+	});
+
 })();
