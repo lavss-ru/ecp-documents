@@ -1,6 +1,12 @@
 (function ($) {
 	'use strict';
 
+	if (typeof wp !== 'undefined' && wp.media && wp.media.model && wp.media.model.Query) {
+
+		wp.media.model.Query.defaultProps.ecp_sig = 0;
+
+	}
+
 	class ECPDocumentsDialog {
 
 		constructor() {
@@ -91,6 +97,28 @@
 
 		}
 
+		normalizeFilename(filename) {
+
+			if (typeof filename !== 'string') {
+				return '';
+			}
+
+			try {
+				filename = decodeURIComponent(filename);
+			} catch (e) {}
+
+			return filename.trim().toLowerCase().replace(/[_\-\s]+/g, ' ');
+
+		}
+
+		getPdfBasename(pdfFilename) {
+
+			const normalized = this.normalizeFilename(pdfFilename);
+
+			return normalized.replace(/\.pdf$/i, '');
+
+		}
+
 		getExpectedSigFilename(pdfFilename) {
 
 			if (!pdfFilename || typeof pdfFilename !== 'string') {
@@ -99,7 +127,9 @@
 
 			}
 
-			return pdfFilename + '.sig';
+			const pdfBasename = pdfFilename.replace(/\.pdf$/i, '');
+
+			return pdfBasename + '.sig';
 
 		}
 
@@ -117,9 +147,14 @@
 
 			}
 
-			const expected = this.getExpectedSigFilename(pdfFilename);
+			const normPdf = this.normalizeFilename(pdfFilename);
+			const normSig = this.normalizeFilename(sigFilename);
+			const pdfBasename = this.getPdfBasename(pdfFilename);
 
-			return sigFilename.toLowerCase() === expected.toLowerCase();
+			const expectedSig1 = pdfBasename + '.sig';
+			const expectedSig2 = normPdf + '.sig';
+
+			return normSig === expectedSig1 || normSig === expectedSig2;
 
 		}
 
@@ -267,7 +302,10 @@
 						text: 'Выбрать'
 					},
 
-					library: {},
+					library: {
+						type: 'application/octet-stream',
+						ecp_sig: 1
+					},
 
 					multiple: false
 
