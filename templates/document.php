@@ -1,6 +1,6 @@
 <?php
 /**
- * Document card template.
+ * Document card template for DSHI Fedoseevka style.
  *
  * Variables:
  *
@@ -18,73 +18,51 @@ $modal_id = 'ecp-modal-' . (int) $sig_id . '-' . wp_unique_id();
 $has_cert = ! empty( $sig_cert_info['serial_number'] ) || ! empty( $sig_cert_info['subject_name'] ) || ! empty( $sig_cert_info['organization'] );
 ?>
 
-<div class="ecp-document">
+<div class="ecp-document ecp-document--dshi">
 
         <div class="ecp-document__row">
 
-                <div class="ecp-document__left">
+                <?php if ( $sig_url && $has_cert ) : ?>
 
-                        <span class="ecp-document__icon">📄</span>
+                        <button
+                                type="button"
+                                class="ecp-document__sig-badge"
+                                data-ecp-modal="<?php echo esc_attr( $modal_id ); ?>"
+                                title="Информация об электронной подписи"
+                                aria-label="Информация об электронной подписи">
 
-                        <span class="ecp-document__title" title="<?php echo esc_attr( $title ); ?>" data-title="<?php echo esc_attr( $title ); ?>"><?php echo esc_html( $title ); ?></span>
+                                <?php echo isset( $sig_icon_svg ) ? $sig_icon_svg : ''; ?>
 
-                </div>
+                        </button>
 
-                <div class="ecp-document__right">
+                <?php endif; ?>
 
-                        <?php if ( $sig_url && $has_cert ) : ?>
+                <?php if ( $pdf_url ) : ?>
 
-                                <button
-                                        type="button"
-                                        class="ecp-document__sig-badge"
-                                        data-ecp-modal="<?php echo esc_attr( $modal_id ); ?>"
-                                        title="Информация об электронной подписи"
-                                        aria-label="Информация об электронной подписи">
+                        <a
+                                class="ecp-document__title"
+                                href="<?php echo esc_url( $pdf_url ); ?>"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="<?php echo esc_attr( $title ); ?>"
+                                data-title="<?php echo esc_attr( $title ); ?>">
 
-                                        <?php echo isset( $sig_icon_svg ) ? $sig_icon_svg : ''; ?>
+                                <?php echo esc_html( $title ); ?>
 
-                                </button>
+                        </a>
 
-                        <?php endif; ?>
+                <?php else : ?>
 
-                        <?php if ( ! empty( $pdf_file_size ) ) : ?>
+                        <span
+                                class="ecp-document__title"
+                                title="<?php echo esc_attr( $title ); ?>"
+                                data-title="<?php echo esc_attr( $title ); ?>">
 
-                                <span class="ecp-document__size"><?php echo esc_html( $pdf_file_size ); ?></span>
+                                <?php echo esc_html( $title ); ?>
 
-                        <?php endif; ?>
+                        </span>
 
-                        <?php if ( $pdf_url ) : ?>
-
-                                <a
-                                        class="ecp-document__download-button"
-                                        href="<?php echo esc_url( $pdf_url ); ?>"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        aria-label="Скачать PDF-документ">
-
-                                        Скачать
-
-                                </a>
-
-                        <?php endif; ?>
-
-                        <?php if ( $sig_url ) : ?>
-
-                                <a
-                                        class="ecp-document__download-button ecp-document__download-button--sig"
-                                        href="<?php echo esc_url( $sig_url ); ?>"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        aria-label="Скачать файл электронной подписи"
-                                        title="Скачать файл электронной подписи (.SIG)">
-
-                                        SIG
-
-                                </a>
-
-                        <?php endif; ?>
-
-                </div>
+                <?php endif; ?>
 
         </div>
 
@@ -211,6 +189,55 @@ $has_cert = ! empty( $sig_cert_info['serial_number'] ) || ! empty( $sig_cert_inf
                                         </div>
 
                                 <?php endif; ?>
+
+                                <div class="ecp-modal__ep-block">
+
+                                        <div class="ecp-modal__ep-header">ЭЛЕКТРОННАЯ ПОДПИСЬ</div>
+
+                                        <div class="ecp-modal__ep-download">
+
+                                                <a
+                                                        href="<?php echo esc_url( $sig_url ); ?>"
+                                                        class="ecp-modal__ep-download-link"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        download>
+
+                                                        📎 Скачать SIG-файл
+
+                                                </a>
+
+                                        </div>
+
+                                        <div class="ecp-modal__ep-divider"></div>
+
+                                        <div class="ecp-modal__ep-text">
+
+                                                Проверить электронную подпись можно с помощью официального сервиса Госуслуг.
+
+                                        </div>
+
+                                        <a
+                                                href="<?php echo esc_url( 'https://e-trust.gosuslugi.ru/check/sign' ); ?>"
+                                                class="ecp-modal__ep-button"
+                                                target="_blank"
+                                                rel="noopener noreferrer">
+
+                                                Проверить электронную подпись
+
+                                        </a>
+
+                                        <a
+                                                href="<?php echo esc_url( 'https://www.gosuslugi.ru/help/faq/esignature/212160' ); ?>"
+                                                class="ecp-modal__ep-info-link"
+                                                target="_blank"
+                                                rel="noopener noreferrer">
+
+                                                Подробнее об электронной подписи на Госуслугах
+
+                                        </a>
+
+                                </div>
 
                         </div>
 

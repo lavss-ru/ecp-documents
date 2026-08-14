@@ -3,7 +3,7 @@
  * Plugin Name: ECP Documents
  * Plugin URI: https://github.com/lavss-ru/ecp-documents
  * Description: Publish PDF documents with electronic signatures (PDF + SIG) directly in the WordPress editor.
- * Version: 0.1.0
+ * Version: 0.1.0-f
  * Requires at least: 6.8
  * Requires PHP: 8.1
  * Author: lavss
@@ -23,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
 define( 'ECP_DOCUMENTS_PLUGIN_FILE', __FILE__ );
 define( 'ECP_DOCUMENTS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ECP_DOCUMENTS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'ECP_DOCUMENTS_VERSION', '0.1.0' );
+define( 'ECP_DOCUMENTS_VERSION', '0.1.0-f' );
 
 require_once __DIR__ . '/vendor/autoload.php';
 
