@@ -752,17 +752,46 @@ a.ecp-document__title:hover {
 
 	.ecp-document__row {
 
-		flex-direction: column;
+		flex-direction: row;
 
 		align-items: flex-start;
 
-		gap: 12px;
+		gap: 8px;
+
+	}
+
+	.ecp-document__left {
+
+		display: flex;
+
+		align-items: flex-start;
+
+		gap: 8px;
+
+		min-width: 0;
+
+		flex: 1;
+
+	}
+
+	.ecp-document__icon,
+	.ecp-document__sig-badge {
+
+		flex-shrink: 0;
 
 	}
 
 	.ecp-document__title {
 
+		flex: 1;
+
+		min-width: 0;
+
 		white-space: normal;
+
+		overflow-wrap: break-word;
+
+		word-break: break-word;
 
 	}
 
