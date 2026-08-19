@@ -270,6 +270,37 @@
 				() => this.handleMediaSelect(type, frame)
 			);
 
+			frame.on(
+				'uploader:upload:success',
+				(attachment) => {
+
+					const library = frame.state().get('library');
+
+					if (library) {
+
+						if (type === 'sig') {
+
+							attachment.set('ecp_sig', 1);
+
+						}
+
+						library.add(attachment, { at: 0 });
+
+						if (!library.get(attachment.id)) {
+
+							wp.media.model.Attachments.prototype.add.call(
+								library,
+								attachment,
+								{ at: 0 }
+							);
+
+						}
+
+					}
+
+				}
+			);
+
 			return frame;
 
 		}
